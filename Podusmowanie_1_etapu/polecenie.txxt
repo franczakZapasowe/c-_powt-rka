@@ -1,0 +1,64 @@
+Kontekst:
+Jesteś odpowiedzialny za napisanie niskopoziomowego modułu przetwarzającego dane telemetryczne z 
+prototypowego bezzałogowego statku powietrznego (UAV). 
+Zespół sprzętowy zrzuca Ci surowe dane pomiarowe z lotu do głównej pamięci. 
+Musisz te dane oczyścić, posortować wirtualnie i wyciągnąć z nich sygnatury czasowe największych 
+przeciążeń do specjalnego bufora awaryjnego.
+
+Twoje zadania (Krok po kroku):
+
+Krok 1: Inicjalizacja i zrzut surowych danych (PPK 01, 03, 04)
+
+    Zadeklaruj stałą określającą liczbę pakietów telemetrycznych (np. constexpr int PAKIETY = 15;).
+
+    Utwórz dwuwymiarową tablicę double telemetria[PAKIETY][3];.
+
+        Kolumna [0] to Timestamp (znacznik czasu – wypełnij go kolejno od 1 do 15).
+
+        Kolumna [1] to Wysokość (wypełnij ją losowymi wartościami od -50 do 500).
+
+        Kolumna [2] to Prędkość (wypełnij ją losowymi wartościami od 0 do 200).
+
+Krok 2: Oczyszczanie szumów (PPK 02, 05)
+Czujniki czasem wariują i podają ujemną wysokość, co jest fizycznie niemożliwe dla drona w locie.
+
+    Zasada: Nie możesz użyć nawiasów kwadratowych [][] do nawigacji po tablicy.
+
+    Utwórz wskaźnik przechodzący przez całą tablicę telemetria. 
+    Jeśli natrafi na wartość wysokości mniejszą od zera, zmień ją na 0. Resztę danych zostaw nietkniętą.
+
+Krok 3: Wirtualny widok na dane (PPK 04, 05)
+Musisz wygenerować raport o pakietach z największą wysokością, 
+ale zakazuje się przestawiania całych wierszy w oryginalnej tablicy telemetria.
+
+    Utwórz jednowymiarową tablicę wskaźników: double* widok[PAKIETY];.
+
+    Zainicjuj ją tak, aby wskaźniki pokazywały na początki kolejnych wierszy w tablicy telemetria.
+
+Krok 4: Sortowanie Wskaźnikowe (PPK 02, 03, 05)
+
+    Napisz algorytm bąbelkowy działający wyłącznie na wskaźnikach, 
+    który posortuje tablicę widok malejąco (od największej do najmniejszej) względem kolumny [1] (Wysokość).
+
+    Przypomnienie: std::swap może dotykać tylko adresów w tablicy widok.
+
+Krok 5: Ekstrakcja do bufora cyklicznego awarii (PPK 02, 03, 04, 05)
+Dowództwo chce znać znaczniki czasu 3 najwyższych pułapów z całego lotu, 
+aby zsynchronizować je z nagraniami z kamer. Moduł zapisu na czarną skrzynkę ma jednak bardzo ograniczoną pamięć.
+
+    Zadeklaruj małą, jednowymiarową tablicę: double czarnaSkrzynka[3] = {};.
+
+    Zadeklaruj wskaźnik zapisu: double* wz = czarnaSkrzynka;.
+
+    Napisz pętlę, która przejdzie przez pierwsze 3 elementy Twojego posortowanego wirtualnego widoku.
+
+    Wyłuskaj z nich wartość kolumny [0] (Timestamp) i zapisz je do czarnaSkrzynka używając 
+    arytmetyki wskaźników z inkrementacją (składnia *wz++ = ...).
+
+    Zabezpiecz ten odcinek przed wyjściem za pamięć (nawet jeśli bufor ma tylko 3 miejsca, 
+    napisz warunek zawijający wskaźnik zapisu na początek czarnaSkrzynka, tak jak projektuje się prawdziwe systemy wbudowane).
+
+Finał:
+Wydrukuj na ekran zawartość czarnaSkrzynka, używając kolejnej pętli. 
+Powinieneś otrzymać 3 znaczniki czasu (Timestamp), w których dron znajdował się najwyżej. 
+Wypisz je do konsoli, dopisując jednostkę s (sekundy).
