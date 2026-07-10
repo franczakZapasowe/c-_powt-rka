@@ -51,7 +51,7 @@ int main() {
 #endif
 
 #if ZADANIE == 2
-//#define TEST
+#define TEST
 
 double dystans (double x1, double y1, double x2,double y2) {
     return sqrt(((x2-x1)*(x2-x1)) + ((y2-y1)*(y2-y1)));
@@ -156,3 +156,4 @@ int main() {
     czyscBufor();
 }
 #endif
+
