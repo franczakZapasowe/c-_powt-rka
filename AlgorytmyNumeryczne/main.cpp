@@ -129,6 +129,7 @@ double opor(double h) {
 }
 constexpr double DOLNA_GRANICA = -10.0;
 constexpr double GORNA_GRANICA = 10.0;
+constexpr double tolerancja = 1e-3;
 
 int main() {
 //     Kontekst: Moduł sterujący oprogramowania lotu (np. we Flytronic) szuka optymalnej wysokości (h),
@@ -148,8 +149,25 @@ int main() {
 //         by zabezpieczyć procesor przed zawieszeniem.
 //     Wypisz znaleziony pułap (xMin), minimalny opór (yMin) oraz statystyki
 //     testu (w której iteracji algorytm faktycznie się zatrzymał dzięki mechanizmowi stagnacji).
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dis(-10.0, 10.0);
+
+        std::cout<<std::fixed<<std::setprecision(4);
+        int stagnacja = 0, limitStagnacji = 500, limitCalkowity = 10000;
+        double xmin = 10.0, minimlanyOpor = 1000.0;
+        double oporH ,wysokosc;
+        int i = 0;
+        for (i = 0; i<limitCalkowity && stagnacja<limitStagnacji; i++) {
+            wysokosc = DOLNA_GRANICA + (1.0*rand()) / (RAND_MAX) * (GORNA_GRANICA - DOLNA_GRANICA);
+            oporH = opor(wysokosc);
+
+            if (oporH < minimlanyOpor) {
+                minimlanyOpor = oporH;
+                xmin = wysokosc;
+                stagnacja = 0;
+            }else
+                stagnacja++;
+        }
+
+    std::cout<<"x(min): "<<xmin<<"\ty(min): "<<minimlanyOpor<<" Algorytm zatrzymal sie w: "<<i<<" iteracji"<<std::endl;
+
 }
 #endif
