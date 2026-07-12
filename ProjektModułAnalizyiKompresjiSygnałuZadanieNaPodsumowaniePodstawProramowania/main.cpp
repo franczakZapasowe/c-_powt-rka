@@ -4,7 +4,9 @@
 #include <algorithm>
 #include <limits.h>
 
+#define TEST
 const double epsilon = 1e-5;
+
 
 struct SygnalAudio {
     int sampleRate = 44100;
@@ -41,6 +43,13 @@ double ocenaKompresji(double probki[], long rozmiar, double prog) {
 
 void testDetektora() {
     double tab [5] = {0.0, 1.0, 2.0, 1.0, 0.0};
+    double dt = 1.0;
+    double pochodnaDlaIndeks1 = (tab[2] - tab[0] )/ (2*dt);
+    double pochodnaDlaIndeks2 = (tab[3] - tab[1] )/ (2*dt);
+    double pochodnaDlaIndeks3 = (tab[4] - tab[2] )/ (2*dt);
+    assert(fabs(pochodnaDlaIndeks1 -1.0) < epsilon);
+    assert(fabs(pochodnaDlaIndeks2 -0.0) < epsilon);
+    assert(fabs(pochodnaDlaIndeks3 - (-1.0)) < epsilon);
 }
 
 void czysc () noexcept {
@@ -65,8 +74,15 @@ int main() {
         return 1;
     }
 
-//#define DETEKTOR
-#ifdef DETEKTOR
+#ifdef  TEST
+
+    std::cerr<<" Uruchamiamy testy jednostkowe DSP...\n";
+
+    testDetektora();
+
+    std::cerr<<"Wszystkie testy zaliczone pomyslnie\n";
+
+#else
     double dt = 1.0/ audio.sampleRate;
     const double mnozik = 1.0 / (2.0 * dt);
     for (int i = 1; i < rozmar-4; i+=4) {
