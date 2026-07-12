@@ -1,0 +1,69 @@
+
+### Projekt: Moduł Analizy i Kompresji Sygnału (Audio Engine)
+
+Twój system musi wczytać "surowy" sygnał, zlokalizować w nim nagłe piki (tzw. transjenty, np. uderzenia werbla),
+a następnie dobrać optymalne parametry kompresji, aby wyrównać głośność bez zniekształcania sygnału.
+
+#### Faza 1: Architektura Pamięci i Danych (Wykłady 4, 5, 8)
+
+1. **Zdefiniuj strukturę `SygnalAudio`:**
+* Musi zawierać informacje metadanych: częstotliwość próbkowania (`int sampleRate`, np. 44100),
+długość nagrania w sekundach (`double trwanie`) oraz głębię bitową.
+* **Kluczowy element:** Wskaźnik na dynamicznie alokowaną tablicę typu `double* probki`,
+która pomieści miliony punktów fali dźwiękowej.
+
+
+2. **Inicjalizacja (Wskaźniki):**
+* Napisz funkcję, która przyjmuje referencję (lub wskaźnik) do struktury `SygnalAudio`,
+alokuje odpowiednią ilość pamięci (na podstawie czasu i częstotliwości) i wypełnia ją testową falą
+(np. zaszumioną sinusoidą z kilkoma potężnymi, losowymi "skokami" głośności).
+
+
+
+#### Faza 2: Tarcze Diagnostyczne i Wyjątki (Wykłady 6, 9)
+
+1. **Asercje:** We wszystkich funkcjach przetwarzających, użyj `assert`, aby zagwarantować,
+że wskaźnik `probki` nigdy nie jest `nullptr`. To Twój niezmiennik.
+2. **Kaskada Wyjątków:** * Zbuduj proces weryfikacji metadanych przed alokacją.
+Jeśli `sampleRate` jest mniejsze lub równe 0, funkcja ma rzucić wyjątek `std::invalid_argument`.
+* Jeśli system spróbuje zaalokować tablicę o rozmiarze przekraczającym
+ np. 1 GB (zabezpieczenie przed przepełnieniem RAM), rzuć `std::length_error`.
+* Zbuduj w `main` bezpieczny blok `try-catch`,
+który wyłapie te błędy, wdroży procedurę czyszczenia pamięci (`noexcept`) i nie pozwoli na crash programu.
+
+
+
+#### Faza 3: Algorytmy Numeryczne - Detektor Transjentów (Wykłady 7, 10)
+
+1. **Prędkość narastania fali:**
+* Aby znaleźć nagłe "uderzenia" w sygnale, nie możesz po prostu szukać dużych wartości amplitudy.
+Musisz szukać miejsc, gdzie sygnał rośnie najszybciej.
+* Napisz algorytm iterujący przez tablicę `probki`, który na bieżąco oblicza **pochodną numeryczną
+(różniczkę centralną)** dla każdej próbki: v[i] = (probki[i+1] - probki[i-1]) / (2 * dt), gdzie $dt$ to odstęp czasu między
+próbkami (odwrotność `sampleRate`).
+* *Optymalizacja sprzętowa:* Dzielenie przez `2 * dt` wyciągnij jako stały mnożnik przed pętlę.
+Prostowanie pętli (Maszyna Duffa) mile widziane!
+
+
+
+#### Faza 4: Optymalizacja Monte Carlo - Inteligentny Kompresor (Wykład 10)
+
+1. **Szukanie idealnego "Threshold" (Progu cięcia):**
+* Kompresor musi obciąć najgłośniejsze piki, ale jeśli utnie za nisko, sygnał straci dynamikę (będzie płaski).
+* Napisz funkcję oceniającą: `double ocenaKompresji(double probki[], int rozmiar, double prog)`.
+Zwraca ona "karę" za zbyt mocne cięcie i "karę" za przepuszczenie zbyt głośnych pików.
+* Ponieważ matematyczny profil tej oceny jest pełen minimów lokalnych, użyj **Metody Monte Carlo**.
+* Algorytm ma losować próg cięcia (od 0.1 do 1.0) i szukać takiego, który minimalizuje wartość z funkcji `ocenaKompresji`.
+Zastosuj kryterium stopu oparte na stagnacji (np. 1000 iteracji bez poprawy rekordu).
+
+
+
+#### Faza 5: Test-Driven Development (Wykład 9)
+
+1. **Tryb Testowy (`#ifdef TEST`):**
+* Cały detektor różniczkowy i struktury mają być oflagowane dyrektywami preprocesora.
+* Przed napisaniem pętli z różniczką, zdefiniuj twarde testy jednostkowe z użyciem tolerancji błędu `eps`.
+ Sprawdź m.in. czy detektor poprawnie wyliczy pochodną ze sztucznie wygenerowanej,
+ idealnie trójkątnej fali (gdzie prędkość zmiany jest stała).
+
+
