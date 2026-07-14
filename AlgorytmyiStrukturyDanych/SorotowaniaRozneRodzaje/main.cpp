@@ -3,7 +3,7 @@
 #include  <utility>
 #include <ctime>
 
-constexpr int ROZMIAR = 20000;
+constexpr int ROZMIAR = 20;
 
 void sortowanieBabelkowe(int *tab, int n) {
     for (int i = 1; i < n; i++) {
@@ -90,26 +90,28 @@ void mergSort(int *tab, int start, int koniec) {
     mergSort(tab, srodek+1, koniec);
     scal(tab, start, srodek, koniec);
 }
-
 int split(int *tab, int start, int koniec) {
-    int ineks = (start+koniec)/2;
-    int pivot = tab[ineks];
-    std::swap(tab[ineks], tab[koniec]);
-    int j = start;
+    int pivot = tab[koniec];
+    int j = start -1;
     for (int i = start; i <= koniec-1; i++) {
-        if (tab[i] <pivot) {
-            std::swap(tab[i], tab[j]);
+        if (tab[i] < pivot) {
             j++;
+            std::swap(tab[i],tab[j]);
         }
-    } // 1 2 3 4 121 12 12 124 41 12 8
-    std::swap(tab[koniec], tab[j]);
+    }
+    j++;
+    std::swap (tab[j], tab[koniec]);
     return j;
+
 }
-void qucikSort(int *tab, int start, int koniec) {
-    int i = (start+koniec)/2;
-    int piwot = tab[i];
-    tab[koniec-1] = piwot;
+void sortuj (int *tab, int start, int koniec) {
+    if (start>=koniec) return;
+    int pivot = split(tab,start,koniec);
+    sortuj (tab, start, pivot-1 );
+    sortuj (tab,pivot+1,koniec);
 }
+
+
 int main() {
     int tab [ROZMIAR];
     wypelnij(tab, ROZMIAR);
@@ -156,15 +158,14 @@ int main() {
     wypelnij(tab, ROZMIAR);
     std::cout<<"Przed sorotwaniem przez scalanie:\n";
     wypisz(tab, ROZMIAR);
-    std::cout<<"Sortowanie prez scalanie trwa...\n";
+    std::cout<<"Sortowanie qucik sort trwa...\n";
     std::clock_t start4 = std::clock();
-    mergSort(tab, 0, ROZMIAR-1);
+    sortuj (tab, 0, ROZMIAR-1);
     std::clock_t end4 = std::clock();
     double czas4 = (double)(end3 - start3) / CLOCKS_PER_SEC;
-    std::cout<<"Po prez scalanie:\n";
+    std::cout<<"Po qucik :\n";
     wypisz(tab, ROZMIAR);
-    std::cout<<"\nCzas sortowania prez scalanie: "<<czas4<<std::endl;
-
+    std::cout<<"\nCzas sortowania qucik sort: "<<czas4<<std::endl;
 
     return 0;
 }
