@@ -26,7 +26,12 @@ bool serch(Wezel *w, int x) {
         }
     }
 
-void usun() {
+void usun(Wezel *&w) {
+    // wprzypadku gdy nie ma dzieci
+    if (w->prawy == nullptr && w ->lewy == nullptr) {}
+    delete w;
+    // w przypaku gdy jedno dziecko
+
 
 }
 
