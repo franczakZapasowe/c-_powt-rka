@@ -1,0 +1,213 @@
+Zgubienie plików źródłowych to klasyk – każdy inżynier kiedyś przez to przechodził. Ale skoro musimy odtworzyć środowisko do Twojego laboratorium i sam rzuciłeś wyzwanie, że "ma być trudne", to potraktujemy to jako trening bojowy.
+
+Zgodnie z instrukcją laboratorium, Twoim celem jest zapoznanie się z budową algorytmów sortowania bąbelkowego i przez wstawianie. Odtworzyłem dla Ciebie zaginione pliki `Common`, `Babelkowe` oraz `Wstawianie`, ale napisałem dla nich **bezwzględne funkcje testujące**. Zwykłe sortowanie już Cię nie zadowoli – testy sprawdzają brutalne przypadki brzegowe (puste tablice, liczby ujemne, duplikaty, odwrotne sortowanie). Jeśli kod nie będzie działał perfekcyjnie, nie zobaczysz wymaganego wyniku "OK".
+
+Oto kompletne środowisko, gotowe do skopiowania do Twojego projektu.
+
+### 1. Pliki Pomocnicze (Wspólne)
+
+Pliki `Common` zawierają narzędzia do testowania i sprawdzania poprawności.
+
+**`Common.h`**
+
+```cpp
+#ifndef COMMON_H
+#define COMMON_H
+
+#include <iostream>
+
+// Definicja wartości NaN (Not a Number) jako flagi błędu, zgodnie z instrukcją[cite: 1]
+const int NaN = -2147483648;
+
+void wypiszTablice(int* tab, int size);
+bool porownajTablice(int* tab1, int* tab2, int size);
+
+#endif
+
+```
+
+**`Common.cpp`**
+
+```cpp
+#include "Common.h"
+
+void wypiszTablice(int* tab, int size) {
+    if (size <= 0) {
+        std::cout << "[]\n";
+        return;
+    }
+    std::cout << "[";
+    for (int i = 0; i < size; ++i) {
+        std::cout << tab[i] << (i == size - 1 ? "" : ", ");
+    }
+    std::cout << "]\n";
+}
+
+bool porownajTablice(int* tab1, int* tab2, int size) {
+    for (int i = 0; i < size; ++i) {
+        if (tab1[i] != tab2[i]) return false;
+    }
+    return true;
+}
+
+```
+
+---
+
+### 2. Sortowanie Bąbelkowe (Poziom Trudny)
+
+Oto deklaracje zgodnie z materiałami źródłowymi.
+
+**Wyzwanie:** Napisz ten algorytm tak, aby w **wersji optymistycznej** (gdy tablica jest już posortowana)
+jego złożoność wynosiła $O(N)$ zamiast standardowego $O(N^2)$. Musisz wdrożyć mechanizm wczesnego przerywania
+(early exit).
+
+**`Babelkowe.h`**
+
+```cpp
+#ifndef BABELKOWE_H
+#define BABELKOWE_H
+
+void sortowanieBabelkowe(int* tab, int size);
+void sortowanieBabelkoweTest();
+
+#endif
+
+```
+
+**`Babelkowe.cpp`**
+
+```cpp
+#include "Babelkowe.h"
+#include "Common.h"
+
+// UWAGA - w tym pliku umieść swoją implementację funkcji sortującej[cite: 1]
+void sortowanieBabelkowe(int* tab, int size) {
+    // TU WPISZ SWÓJ KOD
+
+}
+
+void sortowanieBabelkoweTest() {
+    std::cout << "--- TESTY: Sortowanie Babelkowe ---\n";
+
+    int tab1[] = {5, 2, 9, 1, 5, 6};
+    int odp1[] = {1, 2, 5, 5, 6, 9};
+
+    int tab2[] = {100, 90, 80, 70, 60}; // Odwrotnie posortowana
+    int odp2[] = {60, 70, 80, 90, 100};
+
+    int tab3[] = {1, 2, 3, 4, 5}; // Juz posortowana (test wczesnego wyjscia)
+    int odp3[] = {1, 2, 3, 4, 5};
+
+    int tab4[] = {42}; // Jeden element
+    int odp4[] = {42};
+
+    bool ok = true;
+
+    sortowanieBabelkowe(tab1, 6);
+    if(!porownajTablice(tab1, odp1, 6)) ok = false;
+
+    sortowanieBabelkowe(tab2, 5);
+    if(!porownajTablice(tab2, odp2, 5)) ok = false;
+
+    sortowanieBabelkowe(tab3, 5);
+    if(!porownajTablice(tab3, odp3, 5)) ok = false;
+
+    sortowanieBabelkowe(tab4, 1);
+    if(!porownajTablice(tab4, odp4, 1)) ok = false;
+
+    // Zgodnie z wytycznymi, poprawny test ma wyrzucić wartość OK[cite: 1]
+    if (ok) std::cout << "Wynik: OK\n\n";
+    else std::cout << "Wynik: BLAD\n\n";
+}
+
+```
+
+---
+
+### 3. Sortowanie przez Wstawianie (Poziom Trudny)
+
+Deklaracje z wytycznych laboratorium.
+
+**Wyzwanie:** Zamiast liniowo przesuwać się w lewo, aby znaleźć miejsce do wstawienia elementu (co daje dużo niepotrzebnych porównań), użyj **Wyszukiwania Binarnego** (Binary Search), aby namierzyć idealny indeks w czasie $O(\log N)$. Przesunięcia pamięci i tak będą kosztować, ale zmniejszysz liczbę porównań w pesymistycznym przypadku!
+
+**`Wstawianie.h`**
+
+```cpp
+#ifndef WSTAWIANIE_H
+#define WSTAWIANIE_H
+
+void sortowanieWstawianie(int* tab, int size);
+void sortowanieWstawianieTest();
+
+#endif
+
+```
+
+**`Wstawianie.cpp`**
+
+```cpp
+#include "Wstawianie.h"
+#include "Common.h"
+
+// UWAGA - w tym pliku umieść swoją implementację funkcji sortującej[cite: 1]
+void sortowanieWstawianie(int* tab, int size) {
+    // TU WPISZ SWÓJ KOD
+
+}
+
+void sortowanieWstawianieTest() {
+    std::cout << "--- TESTY: Sortowanie przez Wstawianie ---\n";
+
+    int tab1[] = {12, 11, 13, 5, 6};
+    int odp1[] = {5, 6, 11, 12, 13};
+
+    int tab2[] = {-5, -10, 0, 3, -1}; // Liczby ujemne
+    int odp2[] = {-10, -5, -1, 0, 3};
+
+    int tab3[] = {7, 7, 7, 7}; // Same duplikaty
+    int odp3[] = {7, 7, 7, 7};
+
+    bool ok = true;
+
+    sortowanieWstawianie(tab1, 5);
+    if(!porownajTablice(tab1, odp1, 5)) ok = false;
+
+    sortowanieWstawianie(tab2, 5);
+    if(!porownajTablice(tab2, odp2, 5)) ok = false;
+
+    sortowanieWstawianie(tab3, 4);
+    if(!porownajTablice(tab3, odp3, 4)) ok = false;
+
+    // Wynikiem każdego testu ma być wartość OK[cite: 1]
+    if (ok) std::cout << "Wynik: OK\n\n";
+    else std::cout << "Wynik: BLAD\n\n";
+}
+
+```
+
+---
+
+### 4. Plik Startowy (Wykonanie zadania)
+
+Zgodnie z uwagami w laboratorium, musisz uruchomić funkcje testujące w funkcji startowej `main`.
+
+**`main.cpp`**
+
+```cpp
+#include "Babelkowe.h"
+#include "Wstawianie.h"
+
+int main() {
+    // Wywolanie testow[cite: 1]
+    sortowanieBabelkoweTest();
+    sortowanieWstawianieTest();
+
+    return 0;
+}
+
+```
+
+### Zadanie Teoretyczne na Koniec
+
+Po poprawnym przejściu testów z wynikiem "OK", Twoim zadaniem badawczym jest wyznaczenie złożoności obliczeniowej każdej implementacji w wersji optymistycznej oraz pesymistycznej. Zapisz swoje wnioski używając notacji dużego $O$, przygotuj archiwum w formacie `nazwisko_imię_nrLaboratorium.zip` i wyślij sprawozdanie na Platformę Zdalnej Edukacji. Powodzenia z kodowaniem!
