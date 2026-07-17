@@ -4,7 +4,20 @@
 // UWAGA - w tym pliku umieść swoją implementację funkcji sortującej
 void sortowanieWstawianie(int* tab, int size) {
     // TU WPISZ SWÓJ KOD
-
+    for (int i = 1; i <size; i++) {
+        int v = tab[i];
+        int lewy = 0, prawy = i - 1;
+        while (lewy <= prawy) {
+            int srodek = (lewy + prawy) / 2;
+            if (v < tab[srodek])
+                prawy = srodek - 1;
+            else lewy = srodek+1;
+        }
+        for (int j = i - 1; j >= lewy; j--) {
+            tab[j+1] = tab[j];
+        }
+        tab[lewy] = v;
+    }
 }
 
 void sortowanieWstawianieTest() {
