@@ -2,6 +2,7 @@
 #include "Babelkowe.h"
 #include "Wstawianie.h"
 
+
 int main() {
 
     sortowanieBabelkoweTest();

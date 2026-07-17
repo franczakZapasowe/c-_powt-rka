@@ -1,10 +1,18 @@
 #include "Babelkowe.h"
 #include "Common.h"
-
+#include <algorithm>
 // UWAGA - w tym pliku umieść swoją implementację funkcji sortującej[cite: 1]
 void sortowanieBabelkowe(int* tab, int size) {
     // TU WPISZ SWÓJ KOD
-
+    int ilosc_potrzebnych = 0;
+    for (int i = 0; i < size; i++) {
+        for (int j = 1; j < size - ilosc_potrzebnych; j++) {
+            if (tab[j-1]>tab[j]) {
+                std::swap(tab[j-1], tab[j]);
+            }
+        }
+        ilosc_potrzebnych++;
+    }
 }
 
 void sortowanieBabelkoweTest() {
