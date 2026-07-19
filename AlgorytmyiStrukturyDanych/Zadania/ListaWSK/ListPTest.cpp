@@ -123,7 +123,7 @@ void ListPTest() {
 		int i = 0;
 		bool blad = 0;
 		while (value != NaN) {
-			//cout << value << endl;
+			cout << value << endl;
 			value = iterateP(iter.get());
 			blad = value == tab[i];
 			i++;

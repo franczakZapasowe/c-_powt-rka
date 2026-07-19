@@ -28,37 +28,45 @@ void destroyPList(ListP* list) {
 
 void addToPList(ListP* list, int value) {
 	//Tutaj dokonaj implementacji funkcji
-	Element* element = newElement(value);
-	if (list!=nullptr) {
-		list->last -> next= element;
-		list->rozmiar++;
-	}else {
-		list -> first = element;
-		list->last = element;
-		list->rozmiar++;
+	if (list!=NULL) {
+		Element* element = newElement(value);
+		if (list -> first == NULL) {
+			list->first = element;
+			list ->last = element;
+			list->rozmiar++;
+		}
+		else {
+			list->last->next = element;
+			list->last = element;
+			list->rozmiar++;
+		}
 	}
 }
 
 Element* search(ListP* list, int value) {
 	//Tutaj dokonaj implementacji funkcji
-	Element* curr = list->first;
 	if (list!=nullptr) {
-		while (curr->value != value) {
+		Element* curr = list->first;
+		while (curr != nullptr && curr->value != value) {
 			curr = curr->next;
 		}
+		return curr;
 	}
-	return curr;
+	return NULL;
 }
 
 int getFromPList(ListP* list, int index) {
 	//Tutaj dokonaj implementacji funkcji
-	Element *curr = list -> first;
-	if (list!=nullptr) {
-		for (int i = 1; i < index; i++) {
-			curr = curr->next;
+	if (list!=NULL) {
+		if (index >=0 && index < list->rozmiar) {
+			Element *curr = list -> first;
+			for (int i = 0; i < index && curr!=nullptr; i++) {
+				curr = curr->next;
+			}
+			return curr->value;
 		}
 	}
-		return curr->value;
+	return NaN;
 }
 
 Element* newElement(int value) {
@@ -91,6 +99,9 @@ int removeFromPList(ListP* list, int index) {
 		}		
 		if (curr->next == NULL) { //Jak koniec kolejki
 			list->last = prev;
+			if (prev != NULL) { // Zabezpieczenie na wypadek, gdyby lista miała tylko 1 element
+				prev->next = NULL;
+			}
 		}
 		value = curr->value;
 		list->rozmiar--;
@@ -107,8 +118,26 @@ int sizeP(ListP* list) {
 
 auto_ptr<IteratorP> getPIterator(ListP* list) {
 	//Tutaj dokonaj implementacji funkcji
+	if (list!=NULL) {
+		IteratorP *iter = new IteratorP;
+		iter->list = list;
+		iter->curr = list->first;
+		iter->counter = 0;
+
+		return auto_ptr<IteratorP>(iter);
+	}
+	return auto_ptr<IteratorP>(NULL);
+
 }
 
 int iterateP(IteratorP* iterator) {
+	int value = 0;
 	//Tutaj dokonaj implementacji funkcji
+	if (iterator!=NULL && iterator->curr != NULL) {
+		value = iterator->curr->value;
+		iterator->curr = iterator->curr->next;
+		iterator->counter++;
+		return value;
+	}
+	return NaN;
 }
