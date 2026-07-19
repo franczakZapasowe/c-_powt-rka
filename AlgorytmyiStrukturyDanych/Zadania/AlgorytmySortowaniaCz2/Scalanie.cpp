@@ -5,42 +5,39 @@
 void scal(int* tab, int lewy, int srodek, int prawy) {
     // TU WPISZ SWÓJ KOD
     // Wskazówka: Będziesz potrzebował dynamicznej tablicy pomocniczej!
-    int *temp = new int[prawy - lewy +1];
-    int i = lewy, j = srodek+1, k = 0;
-    while (i <= srodek && j <=prawy) {
+    int *temp = new int [prawy-lewy +1];
+    int i = lewy , j = srodek +1 , k = 0;
+    while (i <= srodek && j<=prawy) {
         if (tab[i]<tab[j]) {
             temp[k++] = tab[i++];
         }else {
             temp[k++] = tab[j++];
         }
-    };
-
-    while (i<=srodek) {
-       temp[k++] = tab[i++];
     }
-
-    while (j<=prawy) {
+    while (i <= srodek) {
+        temp[k++] = tab[i++];
+    }
+    while (j <= prawy) {
         temp[k++] = tab[j++];
     }
 
     k = 0;
-    for (int iter = lewy; iter <= prawy; iter++) {
+    for (int iter = lewy ; iter <=prawy  ; iter++) {
         tab[iter] = temp[k++];
     }
+
     delete [] temp;
-    temp = nullptr;
 
 }
 
 // Funkcja rekurencyjna dzieląca tablicę na pół
 void sortowanieScalanieRek(int* tab, int lewy, int prawy) {
     // TU WPISZ SWÓJ KOD
-    if (lewy<prawy) {
-        int srodek = (lewy + prawy) / 2;
-        sortowanieScalanieRek(tab,lewy,srodek);
-        sortowanieScalanieRek(tab, srodek+1, prawy);
-        scal(tab,lewy,srodek,prawy);
-    }
+    if (lewy >= prawy) return;
+    int srodek = (lewy + prawy) / 2;
+    sortowanieScalanieRek(tab, lewy,srodek);
+    sortowanieScalanieRek(tab, srodek+1,prawy);
+    scal(tab,lewy,srodek,prawy);
 }
 
 // Główna funkcja startowa
