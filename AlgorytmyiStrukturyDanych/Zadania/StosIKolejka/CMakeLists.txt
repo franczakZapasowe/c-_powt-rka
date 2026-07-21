@@ -11,4 +11,8 @@ add_executable(StosIKolejka
         KolejkaStosP.cpp
         Program.cpp
         KolejkaStosA.h
+        ListA.h
+        ListA.cpp
+        ListP.h
+        ListP.cpp
 )

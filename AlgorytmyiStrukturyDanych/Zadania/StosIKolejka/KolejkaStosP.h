@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "../../../Lab3/Src/l_lista_wskaznikowa/ListP.h" // dostosuj sciezke do wlasnej instalacji materialow
+#include "ListP.h" // dostosuj sciezke do wlasnej instalacji materialow
 
 //Kolejka:
 void zakolejkujP(ListP* lista, int wartosc); //Dodanie do kolejki
