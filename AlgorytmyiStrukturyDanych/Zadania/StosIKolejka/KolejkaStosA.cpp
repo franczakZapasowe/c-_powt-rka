@@ -7,18 +7,28 @@ using namespace std;
 
 void zakolejkujA(ListA* lista, int wartosc) {
 	//Tutaj dokonaj implementacji funkcji
+	addToAList(lista, wartosc);
 }
 
 int odkolejkujA(ListA* lista) {
 	//Tutaj dokonaj implementacji funkcji
+	if (sizeA(lista)==0) {
+		return NaN;
+	}
+	return removeFromAList(lista,0);
 }
 
 void wrzucNaStosA(ListA* lista, int wartosc) {
 	//Tutaj dokonaj implementacji funkcji
+	addToAList(lista, wartosc);
 }
 
 int zdejmujZeStosuA(ListA* lista) {
 	//Tutaj dokonaj implementacji funkcji
+	if (sizeA(lista)==0) {
+		return NaN;
+	}
+	return removeFromAList(lista, lista->counter-1);
 }
 
 void KolejkaStosATest() {

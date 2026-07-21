@@ -7,18 +7,28 @@ using namespace std;
 
 void zakolejkujP(ListP* lista, int wartosc) {
 	//Tutaj dokonaj implementacji funkcji
+		addToPList(lista, wartosc);
 }
 
 int odkolejkujP(ListP* lista) {
 	//Tutaj dokonaj implementacji funkcji
+	if (sizeP(lista) == 0) {
+		return NaN;
+	}
+	return removeFromPList(lista,0);
 }
 
 void wrzucNaStosP(ListP* lista, int wartosc) {
 	//Tutaj dokonaj implementacji funkcji
+	addToPList(lista, wartosc);
 }
 
 int zdejmujZeStosuP(ListP* lista) {
 	//Tutaj dokonaj implementacji funkcji
+	if (sizeP(lista) == 0) {
+		return NaN;
+	}
+	return removeFromPList(lista, lista->rozmiar-1);
 }
 
 void KolejkaStosPTest() {
