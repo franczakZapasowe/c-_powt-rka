@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <string>
 #include <list>
+#include <cassert>
 #include "Common.h"
 #include "Dictionary.h"
 #include "DictionaryTest.h"
@@ -39,7 +40,13 @@ Para* usunZListy(list<Para*> lista, int index) { //Usunięcie z listy elementu o
 
 //Obsługa mapy
 Map* newMap(int tabSize) {
-	//Dokonaj implementacji funkcji. Stwórz słownik konstruktorem listy: list<Para*>()	
+	//Dokonaj implementacji funkcji. Stwórz słownik konstruktorem listy: list<Para*>()
+	assert(tabSize > 0);
+	Map *mapa = new Map();
+	mapa -> tabSize = tabSize;
+	mapa -> numElements = 0;
+	mapa -> tab = new list<Para*>[tabSize];
+	return mapa;
 };
 
 void destroyMap(Map* map) {
@@ -53,6 +60,15 @@ void destroyMap(Map* map) {
 
 int funkcjaMieszajaca(Map* map, string klucz) {
 	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji hashCode	
+	if (map!= nullptr && map-> tab != nullptr) {
+		int hash = 0;
+		for (char ch: klucz) {
+			int chInt = (int)ch;
+			hash += chInt*71;
+		}
+		return hash % map->tabSize;
+	}
+	return NaN;
 }
 
 int znajdzIndeksKlucza(list<Para*> list, string klucz) {
@@ -72,6 +88,11 @@ bool znajdzKlucz(std::list<Para*> lista, std::string klucz) { //Informuje czy w 
 void wstaw(Map* map, string klucz, int wartosc) {
 	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji funkcjaMieszajaca, znajdzIndeksKlucza
 	//UWAGA: dodanie do listy możesz zrealizować za pomocą funkcji: lista.push_front(element)
+	int idTablicy = funkcjaMieszajaca(map,klucz);
+	int idWListy = znajdzIndeksKlucza(map->tab[idTablicy],klucz);
+	
+
+
 }
 
 int odczytaj(Map* map, string klucz) {
