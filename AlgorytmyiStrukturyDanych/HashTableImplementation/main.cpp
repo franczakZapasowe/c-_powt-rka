@@ -3,112 +3,133 @@
 #include <cstring>
 
 using namespace std;
+// HasTable
+// isEMpty, insert, hashFunction removeItem serchTAble, printTAble
 
-
-// HashTAble to implement 500, Arutr
-class HasTable {
+// HashTAble to implement key(int), value(string)
+class Hash {
 private:
     static const int hashGroups = 10;
-    list<pair<int,string>> table[hashGroups]; // List1, Inde 0
-
+    list<pair<int,string>>table[hashGroups];
 public:
-    bool isEmpty()const;
+    bool isEmpty();
     int hashFunction(int key);
-    void insertItem(int key, string value);
+    void insert(int key, string value);
     void removeItem(int key);
     string serchTAble(int key);
     void printTable();
 };
 
-bool HasTable::isEmpty() const {
-    int sum{};
-    for (int i{}; i<hashGroups;i++) {
-        sum += table[i].size();
+bool Hash::isEmpty() {
+    int suma = 0;
+    for (int i = 0; i < hashGroups; i++) {
+        suma+=table[i].size();
     }
-    if (!sum) {
-        return true;
-    }
+    if (suma==0) return true;
     return false;
 }
 
-int HasTable::hashFunction(int key) {
-    return key % hashGroups;
+int Hash::hashFunction(int key) {
+    return key%hashGroups;
 }
 
-void HasTable::insertItem(int key, string value) {
+void Hash::insert(int key, string value) {
     int hashValue = hashFunction(key);
-    auto&cell = table[hashValue];
-    auto bItr = begin(cell);
-    bool keyExists = false;
-    for (; bItr != end(cell); bItr++) {
-        if (bItr->first == key) {
-            keyExists = true;
-            bItr->second = value;
-            cout<<"Key exists, value replaced "<<endl;
+    auto &cell = table[hashValue];
+    auto it = begin(cell);
+    bool keyExisiting = false;
+    for (; it!=end(cell); ++it) {
+        if (it->first == key) {
+            keyExisiting = true;
+            it -> second = value;
+            cout<<"[INFO] key exisitng, value replaced\n";
             break;
         }
     }
-    if (!keyExists) {
+    if (!keyExisiting) {
         cell.emplace_back(key, value);
+        cout<<"[INFO] key is not exisitng, new value added\n";
     }
-
     return;
 }
 
-void HasTable::removeItem(int key) {
+void Hash::removeItem(int key) {
     int hashValue = hashFunction(key);
     auto&cell = table[hashValue];
-    auto bItr = begin(cell);
-    bool keyExists = false;
-    for (; bItr != end(cell); bItr++) {
-        if (bItr->first == key) {
-            keyExists = true;
-            bItr = cell.erase(bItr);
-            cout<<"Item removed "<<endl;
+    auto it  = begin(cell);
+    bool keyExisiting = false;
+    for (; it!=end(cell); ++it) {
+        if (it->first == key) {
+            keyExisiting = true;
+            it = cell.erase(it);
+            cout<<"Key is existing, Value removed\n";
             break;
         }
     }
-    if (!keyExists) {
-        cout<<"Item not found"<<endl;
+    if (!keyExisiting) {
+        cout<<"Key is not existing, none value removed\n";
     }
-    return;
 }
 
-void HasTable::printTable() {
-    for (int i {}; i<hashGroups; i++) {
-        if (table[i].size() == 0) continue;
-
-        auto bIter = table[i].begin();
-        for (;bIter!=table[i].end();bIter++) {
-            cout<<"KEY: "<<bIter->first<<" Value: "<<bIter->second<<endl;
+string Hash::serchTAble(int key) {
+    int hashValue = hashFunction(key);
+    auto&cell = table[hashValue];
+    auto it  = begin(cell);
+    bool keyExisiting = false;
+    for (; it!=end(cell); ++it) {
+        if (it ->first == key) {
+            keyExisiting = true;
+            return it->second;
         }
     }
+    if (!keyExisiting) {
+        return "";
+    }
+}
+
+void Hash::printTable() {
+    int suma = 0;
+    for (int i =0; i<hashGroups; i++) {
+        if (table[i].empty()) {
+            suma+=table[i].size();
+            continue;
+        }
+        auto it  = table[i].begin();
+        while (it!=end(table[i])) {
+            cout<<"KEY: "<<it->first<<" VALUE: "<<it->second<<"\n";
+            it++;
+        }
+    }
+    if (suma==0) cout<<"TABLE IS EMPTY\n";
     return;
 }
 
 int main() {
-    HasTable ht;
 
-    if (ht.isEmpty()) {
-        cout<<"Table is empty"<<endl;
-    } else {
-        cout<<"Table is not empty"<<endl;
-    }
+    Hash hash;
+    cout<<"IsEmpty TEST:\n";
 
-    ht.insertItem(1, "Hello");
-    ht.insertItem(12, "HI");
-    ht.insertItem(51, "CZESC");
-    ht.insertItem(11, "JO");
-    ht.insertItem(631, "HEJ");
-    ht.insertItem(631, "HelloKI");
-    ht.printTable();
-    ht.removeItem(51);
-    ht.removeItem(531);
+    if (hash.isEmpty()) cout<<"Hash is empty\n";
+    else cout<<"Hash is not empty\n";
+    cout<<"Print table TEST:\n";
+    hash.printTable();
 
-    if (ht.isEmpty()) {
-        cout<<"Table is empty"<<endl;
-    } else {
-        cout<<"Table is not empty"<<endl;
-    }
+    hash.insert(10, "Pilka");
+    hash.insert(12, "Rower");
+    hash.insert(13, "Balon");
+
+    hash.printTable();
+
+    cout<<"Remove TEST:\n";
+    hash.removeItem(12);
+    hash.printTable();
+
+    cout<<"Insert in same index (10) - OLD VALUE - Pilka, NEW VALUE - Samolot\n";
+    hash.insert(10, "Samolot");
+
+    cout<<"SerchTAble\n";
+    cout<<"Wartosc: "<<hash.serchTAble(10);
+
+
 
 }
