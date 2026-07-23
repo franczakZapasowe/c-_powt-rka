@@ -42,10 +42,10 @@ Para* usunZListy(list<Para*> lista, int index) { //Usunięcie z listy elementu o
 Map* newMap(int tabSize) {
 	//Dokonaj implementacji funkcji. Stwórz słownik konstruktorem listy: list<Para*>()
 	assert(tabSize > 0);
-	Map *mapa = new Map();
-	mapa -> tabSize = tabSize;
-	mapa -> numElements = 0;
+	Map *mapa = new Map;
+	mapa->tabSize = tabSize;
 	mapa -> tab = new list<Para*>[tabSize];
+	mapa->numElements = 0;
 	return mapa;
 };
 
@@ -59,16 +59,9 @@ void destroyMap(Map* map) {
 }
 
 int funkcjaMieszajaca(Map* map, string klucz) {
-	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji hashCode	
-	if (map!= nullptr && map-> tab != nullptr) {
-		int hash = 0;
-		for (char ch: klucz) {
-			int chInt = (int)ch;
-			hash += chInt*71;
-		}
-		return hash % map->tabSize;
-	}
-	return NaN;
+	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji hashCode
+	int hash = hashCode(klucz);
+	return hash % map->tabSize;
 }
 
 int znajdzIndeksKlucza(list<Para*> list, string klucz) {
@@ -88,19 +81,42 @@ bool znajdzKlucz(std::list<Para*> lista, std::string klucz) { //Informuje czy w 
 void wstaw(Map* map, string klucz, int wartosc) {
 	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji funkcjaMieszajaca, znajdzIndeksKlucza
 	//UWAGA: dodanie do listy możesz zrealizować za pomocą funkcji: lista.push_front(element)
-	int idTablicy = funkcjaMieszajaca(map,klucz);
-	int idWListy = znajdzIndeksKlucza(map->tab[idTablicy],klucz);
-	
-
-
+	int position = funkcjaMieszajaca(map,klucz);
+	int index = znajdzIndeksKlucza(map->tab[position],klucz);
+		if (index !=-1) {
+			Para *p = odczytajZListy(map->tab[position],index);
+			p->wartosc = wartosc;
+		}else {
+			Para *p = newPara(klucz,wartosc);
+			map->tab[position].emplace_front(p);
+			map->numElements++;
+		}
+	return ;
 }
 
 int odczytaj(Map* map, string klucz) {
-	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji funkcjaMieszajaca, znajdzIndeksKlucza oraz odczytajZListy	
+	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji funkcjaMieszajaca, znajdzIndeksKlucza oraz odczytajZListy
+	int hash = funkcjaMieszajaca(map,klucz);
+	int index = znajdzIndeksKlucza(map -> tab[hash],klucz);
+	if (index!=-1) {
+		Para *p = odczytajZListy(map -> tab[hash],index);
+		return p->wartosc;
+	}
+	return NaN;
 }
 
 int usun(Map* map, string klucz) {
-	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji funkcjaMieszajaca, znajdzIndeksKlucza oraz usunZListy	
+	//Dokonaj implementacji funkcji. Do realizacji możesz skorzystać z funkcji funkcjaMieszajaca, znajdzIndeksKlucza oraz usunZListy
+	int hash = funkcjaMieszajaca(map,klucz);
+	int index = znajdzIndeksKlucza(map->tab[hash],klucz);
+	if (index != -1) {
+		Para *p = usunZListy(map->tab[hash],index);
+		int wartosc = p->wartosc;
+		destroyPara(p);
+		map->numElements--;
+		return wartosc;
+	}
+	return NaN;
 }
 
 int rozmiar(Map* map) {
