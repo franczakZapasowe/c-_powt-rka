@@ -3,9 +3,10 @@
 #include <cstring>
 
 using namespace std;
+//#define WWERSJA
+#ifdef WWERSJA
 // HasTable
 // isEMpty, insert, hashFunction removeItem serchTAble, printTAble
-
 // HashTAble to implement key(int), value(string)
 class Hash {
 private:
@@ -129,7 +130,17 @@ int main() {
 
     cout<<"SerchTAble\n";
     cout<<"Wartosc: "<<hash.serchTAble(10);
-
-
-
 }
+
+#else
+
+struct Node {
+    int key;
+    string value;
+};
+
+
+int main() {
+    return 0;
+}
+#endif
