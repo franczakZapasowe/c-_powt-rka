@@ -137,6 +137,51 @@ int main() {
 struct Node {
     int key;
     string value;
+    Node* next;
+
+    Node(int k, string v) {
+        key = k;
+        value = v;
+        next = nullptr;
+    }
+};
+
+class HashTable {
+private:
+    static const int buckets = 10;
+    Node* table[buckets];
+
+public:
+
+    HashTable() {
+        for (int i = 0; i < buckets; i++) {
+            table[i] = nullptr;
+        }
+    }
+
+    int hashFunction(int key) {
+        return key % buckets;
+    }
+
+    void insert(int key, string value) {
+        int index = hashFunction(key);
+        Node *p = table[index];
+        Node * current = p;
+
+        while (current!=nullptr) {
+             if (current->key == key) {
+                 current->value = value;
+                 return;
+             }
+            current = current->next;
+        }
+
+        Node *newNode = new Node(key, value);
+        newNode->next = p;
+        
+
+    }
+
 };
 
 
