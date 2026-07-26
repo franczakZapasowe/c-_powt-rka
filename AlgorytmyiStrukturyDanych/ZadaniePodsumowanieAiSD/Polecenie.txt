@@ -1,0 +1,59 @@
+### Projekt Inżynierski: Silnik Pasm dla Wielopasmowego Kompresora (Multiband Compressor Engine)
+
+**Kontekst systemu:**
+Projektujesz backend pamięciowy dla wtyczki audio.
+Twój system musi błyskawicznie zarządzać punktami podziału pasm częstotliwości (crossover frequencies)
+oraz pozwalać na zapisywanie i odczytywanie całych konfiguracji (presetów) z pamięci.
+
+Wymaga to połączenia **obu** struktur, które napisałeś: Słownika (Hash Map) oraz Drzewa BST.
+
+#### Etap 1: Struktura Danych (Drzewo w Słowniku)
+
+Musisz zaprojektować system, w którym Słownik (Tablica Mieszająca) przechowuje presety,
+ale wartością w każdym slocie słownika **nie jest zwykły `int**`, lecz wskaźnik na korzeń Drzewa BST (`Drzewo*`).
+
+* **Słownik (Presets):** Kluczem jest nazwa presetu (np. `string nazwa = "Vocal_Punch"`).
+* **Drzewo BST (Bands):** Każdy węzeł w drzewie reprezentuje punkt podziału pasma w hercach.
+`klucz` węzła to częstotliwość (np. $2500$ Hz), a `wartosc` to współczynnik kompresji (np. $4$ jako proporcja 4:1).
+
+#### Etap 2: Operacje Podstawowe (Integracja)
+
+Napisz główną funkcję zarządzającą, która pozwala na wprowadzanie danych do tego podwójnego systemu.
+
+1. **`void dodajPasmoDoPresetu(Map* mapa, string nazwaPresetu, int czestotliwosc, int ratio)`**
+* *Logika:* Funkcja najpierw oblicza hash dla `nazwaPresetu`. Jeśli taki preset nie istnieje,
+najpierw go tworzy (alokuje nowe puste drzewo i wrzuca do słownika).
+Następnie wstawia nowy węzeł do tego konkretnego drzewa BST z odpowiednią wartością Hz i kompresji.
+
+
+
+#### Etap 3: Zaawansowana Logika Biznesowa (Prawdziwe wyzwanie)
+
+Gdy struktury są już połączone, czas na algorytmy o wyższym poziomie trudności,
+które sprawdzą Twoje zrozumienie wskaźników i nawigacji po drzewach.
+
+1. **Funkcja: `int znajdzNajblizszePasmo(Drzewo* drzewo, int doceloweHz)**`
+* *Opis:* Użytkownik klika w interfejsie punkt na wykresie (np. $1150$ Hz).
+Rzadko trafia idealnie w zapisane pasmo. Twoim zadaniem jest przejść przez drzewo BST i zwrócić `czestotliwosc` pasma,
+ które znajduje się **najbliżej** (matematycznie) podanej wartości.
+* *Haczyk:* Standardowa funkcja `znajdz` wymaga idealnego trafienia.
+ Tutaj musisz schodzić w dół drzewa, na bieżąco pamiętając różnicę (deltę) między szukanym punktem,
+ a wartościami w węzłach. Złożoność czasowa musi wynosić $O(\log n)$.
+
+
+2. **Funkcja: `Drzewo* skopiujPreset(Drzewo* zrodlo)**`
+* *Opis:* Użytkownik klika "Zapisz jako...". Musisz stworzyć **głęboka kopię (deep copy)** całego Drzewa BST
+do zupełnie nowego obszaru w pamięci.
+* *Haczyk:* Jeśli użyjesz pętli z przechodzeniem in-order i wstawianiem klasyczną funkcją `wstaw`,
+stracisz oryginalny kształt drzewa. Zastanów się, jak użyć rekurencji (najlepiej przechodzenia typu *pre-order*),
+aby nowe drzewo zachowało idealnie tę samą strukturę korzeni i gałęzi.
+
+
+3. **Wielkie Sprzątanie (Memory Management):**
+* Napisz funkcję `void zniszczSilnik(Map* mapa)`.
+Musisz wyczyścić całą zaalokowaną pamięć bez żadnego wycieku.
+Oznacza to przejście przez każdą szufladkę słownika, iterację po każdej liście jednokierunkowej,
+wywołanie `destroyDrzewo` (które rekurencyjnie usuwa węzły za pomocą *post-order*) dla każdego presetu,
+a na końcu usunięcie samych par słownika.
+
+
