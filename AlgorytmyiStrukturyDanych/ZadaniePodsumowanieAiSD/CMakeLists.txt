@@ -3,4 +3,8 @@ project(ZadaniePodsumowanieAiSD)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(ZadaniePodsumowanieAiSD main.cpp)
+add_executable(ZadaniePodsumowanieAiSD main.cpp
+        Slownik.cpp
+        Slownik.h
+        Drzewo.cpp
+        Drzewo.h)

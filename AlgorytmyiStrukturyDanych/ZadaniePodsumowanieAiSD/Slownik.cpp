@@ -1,0 +1,36 @@
+//
+// Created by mf on 7/27/26.
+//
+
+#include "Slownik.h"
+
+//--------------------------Funkcje pomocnicze
+Slownik* newSlownik(string klucz, Drzewo* drzewo){
+    if (drzewo!=nullptr) {
+        Slownik* slownik = new Slownik;
+        slownik->klucz = klucz;
+        slownik->drzewo = drzewo;
+        return slownik;
+    }
+    return nullptr;
+}
+
+void destroySlownik(Slownik* slownik) {
+    delete slownik;
+}
+
+// ------------------------- FUNKCJE HASHUJACE
+int hashCode(string key) {
+    int hash = 0;
+    for (char ch: key) {
+        int chint = (int)ch;
+        hash+=chint;
+    }
+    return hash;
+}
+
+int hashFunction(Mapa* m, string key) {
+    int hash = hashCode(key);
+    return hash % m->tabSize;
+}
+
