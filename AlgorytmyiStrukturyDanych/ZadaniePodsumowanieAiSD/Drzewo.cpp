@@ -26,8 +26,14 @@ void insert(Drzewo* drzewo, int klucz, int wartosc) {
             drzewo->korzen = nowy;
             return;
         }
-
-
+        else if (wartosc < drzewo->korzen->wartosc) {
+            drzewo->korzen->lewy = nowy;
+            return;
+        }
+        else if (wartosc > drzewo->korzen->wartosc) {
+            drzewo->korzen->prway = nowy;
+            return;
+        }
     }
-
+    return;
 }

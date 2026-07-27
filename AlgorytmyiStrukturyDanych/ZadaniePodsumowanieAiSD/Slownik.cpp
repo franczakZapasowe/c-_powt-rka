@@ -34,3 +34,17 @@ int hashFunction(Mapa* m, string key) {
     return hash % m->tabSize;
 }
 
+int znajdzIndeksKLucza(list<Slownik *> slownik, string klucz) {
+    int i = 0;
+    for (Slownik* s : slownik) {
+        if (s->klucz == klucz) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+}
+
+bool znajdzKLucz(list<Slownik *> slownik, string klucz) {
+    return znajdzIndeksKLucza(slownik, klucz) >-1;
+}

@@ -23,4 +23,7 @@ struct Mapa {
 
 int hashCode(string key);
 int hashFunction(string key);
+int znajdzIndeksKLucza(list<Slownik*> slownik,string klucz);
+bool znajdzKLucz(list<Slownik*> slownik,string klucz);
+
 #endif //ZADANIEPODSUMOWANIEAISD_SLOWNIK_H
