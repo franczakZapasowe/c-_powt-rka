@@ -19,6 +19,12 @@ void destroySlownik(Slownik* slownik) {
     delete slownik;
 }
 
+Slownik* odczytajZListy(list<Slownik *> slownik, int index) {
+    auto iter = slownik.begin();
+    advance(iter,index);
+    return *iter;
+}
+
 // ------------------------- FUNKCJE HASHUJACE
 int hashCode(string key) {
     int hash = 0;
@@ -47,4 +53,24 @@ int znajdzIndeksKLucza(list<Slownik *> slownik, string klucz) {
 
 bool znajdzKLucz(list<Slownik *> slownik, string klucz) {
     return znajdzIndeksKLucza(slownik, klucz) >-1;
+}
+
+void insert(Mapa*mapa, string klucz, Drzewo* drzewo0) {
+    if (mapa!=nullptr) {
+        int position = hashFunction(mapa, klucz);
+        int index = znajdzIndeksKLucza(mapa->slownik[position], klucz);
+        if (index!=-1) {
+            Slownik * s = odczytajZListy(mapa->slownik[position], index);
+            s->drzewo = drzewo0;
+            return;
+        }else {
+            Slownik* para = new Slownik;
+            para->klucz = klucz;
+            para->drzewo = drzewo0;
+            mapa->slownik[position].emplace_front(para);
+            mapa->iloscElementow++;
+            return;
+        }
+    }
+    return;
 }

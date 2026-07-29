@@ -5,12 +5,18 @@
 using namespace std;
 
 void dodajPasmoDoPresetu(Mapa* mapa, string nazwaPresetu, int czestotliowsc, int reatio ) {
-    int hash = hashFunction(nazwaPresetu);
-    if (znajdzIndeksKLucza(mapa->slownik,nazwaPresetu)) {
-        Drzewo* drzewo = new Drzewo;
-
+    int position = hashFunction(mapa,nazwaPresetu);
+    int index = znajdzIndeksKLucza(mapa->slownik[position],nazwaPresetu);
+    if (index==-1) {
+        Drzewo* noweDrzewo = new Drzewo;
+        noweDrzewo->korzen=nullptr;
+        insert(mapa,nazwaPresetu,noweDrzewo);
+        insertTree(noweDrzewo,czestotliowsc,reatio);
+        return;
     }else {
-
+        Slownik* p = odczytajZListy(mapa->slownik[position],index);
+        insertTree(p->drzewo,czestotliowsc,reatio);
+        return;
     }
 }
 

@@ -8,7 +8,7 @@
 struct Node {
     int klucz;
     int wartosc;
-    Node* prway;
+    Node* prawy;
     Node* lewy;
     Node* ojciec;
 };
@@ -22,6 +22,6 @@ struct Drzewo {
 Drzewo* newDrzewo(Node*n);
 void deleteDrzewo(Drzewo* d);
 //funkcjonalnosci
-void insert(Drzewo* drzewo, int klucz, int wartosc);
+void insertTree(Drzewo* drzewo, int klucz, int wartosc);
 
 #endif //ZADANIEPODSUMOWANIEAISD_DRZEWO_H
