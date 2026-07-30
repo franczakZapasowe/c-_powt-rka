@@ -18,7 +18,7 @@ void deleteDrzewo(Drzewo* d) {
 }
 
 void insertTree(Drzewo* drzewo, int klucz, int wartosc) {
-        Node* nowy = new Node;
+        Node* nowy = new Node(klucz, wartosc);
         nowy -> wartosc = wartosc;
         nowy -> klucz = klucz;
         nowy -> ojciec = nullptr;
@@ -41,4 +41,24 @@ void insertTree(Drzewo* drzewo, int klucz, int wartosc) {
         nowy->ojciec = ojciec;
         if (ojciec->klucz> nowy->klucz) {ojciec->lewy = nowy; return;}
         else {ojciec->prawy = nowy; return;}
+}
+
+Node*copyHelper(const Node* source, Node*parent){
+  if (source == nullptr) return nullptr;
+
+    Node*nowy = new Node(source->klucz, source->wartosc);
+
+    nowy->ojciec = parent;
+
+    nowy->lewy = copyHelper(source->lewy, nowy);
+    nowy->prawy = copyHelper(source->prawy, nowy);
+
+    return nowy;
+}
+
+void deleteHelper(Node* nowy) {
+    if (nowy == nullptr) return;
+    deleteHelper(nowy->lewy);
+    deleteHelper(nowy->prawy);
+    delete nowy;
 }
