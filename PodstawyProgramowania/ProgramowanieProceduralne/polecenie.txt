@@ -1,0 +1,81 @@
+
+**Zadanie 1: Maszyna Stanów sterowana przez argumenty wiersza poleceń**
+
+* **Cel:** Opanowanie polimorfizmu dynamicznego i architektury maszyny stanów.
+
+* **Wymagania:**
+* Program ma pobierać ciąg znaków (np. zaszyfrowaną wiadomość lub zbiór komend) bezpośrednio z
+argumentów funkcji `main` (`argc` i `argv`).
+
+
+* Zaprojektuj strukturę (np. `DaneSterujace`), która będzie przechowywać aktualny stan maszyny,
+ewentualny bufor danych oraz flagę logiczną informującą, czy maszyna ma dalej działać.
+
+
+* **Złota zasada:** Zaimplementuj stany jako odrębne funkcje, ale nie używaj konstrukcji `switch` ani `if-else`
+ w pętli głównej do ich wywoływania! Zamiast tego stwórz tablicę wskaźników na funkcje (tzw. polimorfizm dynamiczny)
+  i w głównej pętli `while` uruchamiaj odpowiedni stan na podstawie indeksu zapisanego w strukturze sterującej.
+
+
+* Pamiętaj, że funkcje stanu nie mogą wywoływać się nawzajem bezpośrednio – muszą
+jedynie modyfikować informację o następnym stanie w przekazanej im strukturze,
+przekazując sterowanie z powrotem do pętli głównej.
+
+
+**Zadanie 2: Pułapki polimorfizmu statycznego i tablice wielowymiarowe**
+
+* **Cel:** Bezpieczne przeciążanie funkcji w połączeniu z trudną składnią wskaźników i referencji do tablic.
+
+
+* **Wymagania:**
+* Napisz dwie przeciążone funkcje o tej samej nazwie (np. `analizujDane`).
+
+
+* Pierwsza wersja funkcji musi przyjmować zwykłą tablicę 2D przez *referencję do tablicy*.
+Wymaga to specyficznej składni i podania obu wymiarów na sztywno w prototypie.
+
+
+* Druga wersja musi przyjmować tablicę 2D za pomocą *wskaźnika na tablicę* (gdzie pierwszy wymiar zewnętrzny przesyłasz
+swobodnie jako dodatkowy argument funkcji).
+
+
+* Rozbuduj obie wersje funkcji o argumenty posiadające *wartości domyślne* (pamiętając o regule, że można je
+ przypisywać tylko od końca listy argumentów).
+
+
+* W funkcji `main` napisz wywołania, które udowodnią, że kompilator nie ma najmniejszych wątpliwości
+ (błąd niejednoznaczności), którą wersję funkcji wybrać, mimo zastosowania skróconych wywołań bazujących
+  na domyślnych wartościach.
+
+
+
+**Zadanie 3: Architektura wieloplikowa z ukrywaniem stanu i zasobami globalnymi**
+
+* **Cel:** Prawidłowy podział kodu na jednostki translacji i zarządzanie zasięgiem.
+
+
+* **Wymagania:**
+* Podziel program na minimum trzy pliki: `main.cpp`, plik implementacji
+modułu (np. `modul.cpp`) oraz jego plik nagłówkowy (`modul.h`).
+
+
+* W pliku nagłówkowym nie używaj `#pragma once`. Zastosuj uniwersalne, ręczne zabezpieczenie przed wielokrotnym
+inkludowaniem używając dyrektyw preprocesora `#ifndef`, `#define` oraz `#endif`.
+
+
+* W pliku implementacji utwórz funkcję (np. generator kolejnych numerów identyfikacyjnych),
+która pamięta swój stan (np. ostatnio wygenerowany numer) pomiędzy swoimi wywołaniami.
+Musisz do tego użyć wyłącznie *lokalnej zmiennej statycznej* wewnątrz tej funkcji.
+
+
+* Zdefiniuj konfigurację (np. mnożnik albo bazową wartość) jako stałą globalną z
+wykorzystaniem słowa kluczowego `extern`. Zadeklaruj jej istnienie w pliku nagłówkowym,
+a zdefiniuj tylko raz w pliku `.cpp`, aby uniknąć błędów konsolidatora (linkera).
+
+
+* Wszystkie te byty w swoim module zamknij w dedykowanej *przestrzeni nazw* (namespace).
+Pamiętaj, aby nie używać `using namespace` w pliku nagłówkowym.
+
+
+Wybierz zadanie, od którego chcesz zacząć, napisz kod i podeślij go do przeglądu.
+Pamiętaj: wskażę Ci wszystkie błędy i luki w logice, ale nie rzucę gotowym kodem. Powodzenia!
