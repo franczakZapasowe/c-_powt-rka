@@ -3,7 +3,11 @@
 #include <random>
 using namespace std;
 
-constexpr int ROZMIAR = 1000;
+#define ZADANIE1
+// #define ZADANIE2
+// #define ZADANIE3
+#ifdef ZADANIE1
+
 int iloscElementowGlobal = 0;
 int nGlobal = 0;
 int licznikWywolanPetli;
@@ -21,7 +25,6 @@ enum class KodBledu {
 };
 
 struct DaneSterujace {
-    char bufor [ROZMIAR];
     Stany atualyStan;
     bool dziala;
     KodBledu blad;
@@ -133,3 +136,7 @@ void wypisz() {
     cout<<"Wynik: "<<nGlobal<<endl;
 }
 
+#ifdef ZADANIE3
+
+
+#endif
