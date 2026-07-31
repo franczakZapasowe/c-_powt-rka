@@ -3,8 +3,8 @@
 #include <random>
 using namespace std;
 
-#define ZADANIE1
-// #define ZADANIE2
+//#define ZADANIE1
+ #define ZADANIE2
 // #define ZADANIE3
 #ifdef ZADANIE1
 
@@ -136,7 +136,22 @@ void wypisz() {
     cout<<"Wynik: "<<nGlobal<<endl;
 }
 
+#else
+#ifdef ZADANIE2
+constexpr int NUM_ROWS = 3, NUM_COLS = 3;
+
+void analizujDane();
+void analizujDane();
+
+int main() {
+    int tab2D[NUM_ROWS][NUM_COLS];
+}
+
+#else
 #ifdef ZADANIE3
 
 
+#endif
+
+#endif
 #endif
