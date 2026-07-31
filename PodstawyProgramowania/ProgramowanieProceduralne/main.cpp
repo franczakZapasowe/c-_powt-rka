@@ -7,23 +7,26 @@ constexpr int ROZMIAR = 1000;
 
 enum class Stany {
     CzekamNaDane = 0,
-    PobieranieDanych = 1,
-    SprawdzDane = 2,
-    Wypisz = 3,
-    ZglosBlad = 4,
-    Reset = 5
+    SprawdzDane = 1,
+    Wypisz = 2,
+    ZglosBlad = 3,
+    Reset = 4
+};
+
+enum class KodBledu {
+    ZaMaloArgumentow,ZaDuzaWartosc,ObaBledy
 };
 
 struct DaneSterujace {
     char bufor [ROZMIAR];
     Stany atualyStan;
     bool dziala;
+    KodBledu blad;
 };
 
 using wskNaStan = void (*) (DaneSterujace&);
 //funkcje Stanow
 void StanCzekaniaNaDane (DaneSterujace& stan);
-void StanPobieranieDanych (DaneSterujace& stan);
 void StanSprawdzDane (DaneSterujace& stan);
 void StanWypisz (DaneSterujace& stan);
 void StanZgloscBlad(DaneSterujace& stan);
@@ -53,7 +56,6 @@ int main(int argc, char  *argv[]) {
 
     wskNaStan dane [] = {
         StanCzekaniaNaDane,
-        StanPobieranieDanych,
         StanSprawdzDane,
         StanWypisz,
         StanZgloscBlad,
@@ -72,13 +74,6 @@ int main(int argc, char  *argv[]) {
 
 void StanCzekaniaNaDane (DaneSterujace& stan) {
     cout<<"Czkeam na dane z systemu:\n";
-    stan.atualyStan = Stany::PobieranieDanych;
-}
-
-void StanPobieranieDanych (DaneSterujace& stan) {
-
-    // int n = pobierzDane();
-    // if (n>0)
     stan.atualyStan = Stany::SprawdzDane;
 }
 
@@ -86,15 +81,34 @@ void StanSprawdzDane (DaneSterujace& stan) {
     if (true) {
         stan.atualyStan = Stany::Wypisz;
     }else {
-        stan.atualyStan = Stany::ZglosBlad;
+        if (n < 1 && x > 1000) {
+            stan.blad = KodBledu::ObaBledy;
+            stan.atualyStan = Stany::ZglosBlad;
+        }else if (n<1 && x<1000) {
+            stan.blad = KodBledu::ZaMaloArgumentow;
+            stan.atualyStan = Stany::ZglosBlad;
+        }
+        else if (n>1 && x>1000) {
+            stan.blad = KodBledu::ZaDuzaWartosc;
+            stan.atualyStan = Stany::ZglosBlad;
+        }
     }
-
 }
 void StanZgloscBlad(DaneSterujace& stan) {
-
+    cout<<"Blad\n";
+    switch (stan.blad) {
+        case KodBledu::ZaMaloArgumentow:
+            cout<<"Podano za malo arguemtnow\n";
+            break;
+        case KodBledu::ZaDuzaWartosc:
+            cout<<"Z obliczen wyszla za duza wartosc\n";
+            break;
+        case KodBledu::ObaBledy:
+            cout<<"Oba bledy\n";
+            break;
+    }
     stan.atualyStan= Stany::Reset;
 }
-
 
 void StanWypisz (DaneSterujace& stan) {
 
