@@ -14,7 +14,7 @@ enum class Stany {
 };
 
 enum class KodBledu {
-    ZaMaloArgumentow,ZaDuzaWartosc,ObaBledy
+    ZaMaloArgumentow,ZaDuzaWartosc,ObaBledy,BrakBedu
 };
 
 struct DaneSterujace {
@@ -32,9 +32,9 @@ void StanWypisz (DaneSterujace& stan);
 void StanZgloscBlad(DaneSterujace& stan);
 void Reset (DaneSterujace& stan);
 //funkcje pomocnicze
+int ileArgumentow();
 int pobierzDane();
-
-
+void wypisz();
 
 int main(int argc, char  *argv[]) {
 
@@ -78,20 +78,22 @@ void StanCzekaniaNaDane (DaneSterujace& stan) {
 }
 
 void StanSprawdzDane (DaneSterujace& stan) {
-    if (true) {
+    int n  =  ileArgumentow();
+    int x = pobierzDane();
+
+    if (n > 1 && x < 1000)  {
         stan.atualyStan = Stany::Wypisz;
-    }else {
-        if (n < 1 && x > 1000) {
-            stan.blad = KodBledu::ObaBledy;
-            stan.atualyStan = Stany::ZglosBlad;
-        }else if (n<1 && x<1000) {
-            stan.blad = KodBledu::ZaMaloArgumentow;
-            stan.atualyStan = Stany::ZglosBlad;
-        }
-        else if (n>1 && x>1000) {
-            stan.blad = KodBledu::ZaDuzaWartosc;
-            stan.atualyStan = Stany::ZglosBlad;
-        }
+    } else if (n >1 && x > 1000) {
+        stan.blad = KodBledu::ZaDuzaWartosc;
+        stan.atualyStan = Stany::ZglosBlad;
+    }
+    else if (n < 1 && x < 1000) {
+        stan.blad = KodBledu::ZaMaloArgumentow;
+        stan.atualyStan = Stany::ZglosBlad;
+    }
+    else if (n < 1 &&  x> 1000) {
+        stan.blad = KodBledu::ObaBledy;
+        stan.atualyStan = Stany::ZglosBlad;
     }
 }
 void StanZgloscBlad(DaneSterujace& stan) {
@@ -111,14 +113,20 @@ void StanZgloscBlad(DaneSterujace& stan) {
 }
 
 void StanWypisz (DaneSterujace& stan) {
-
-
+    wypisz();
     stan.dziala = false;
 }
 
 void Reset (DaneSterujace& stan) {
-
+    cout<<"Reset Danych sterujacych\n";
+    stan.blad = KodBledu::BrakBedu;
+    stan.atualyStan = Stany::CzekamNaDane;
 }
 
 int pobierzDane() {
+
+}
+
+void wypisz() {
+
 }
