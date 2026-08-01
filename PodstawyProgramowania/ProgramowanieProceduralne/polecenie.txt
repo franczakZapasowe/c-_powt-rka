@@ -76,6 +76,3 @@ a zdefiniuj tylko raz w pliku `.cpp`, aby uniknąć błędów konsolidatora (lin
 * Wszystkie te byty w swoim module zamknij w dedykowanej *przestrzeni nazw* (namespace).
 Pamiętaj, aby nie używać `using namespace` w pliku nagłówkowym.
 
-
-Wybierz zadanie, od którego chcesz zacząć, napisz kod i podeślij go do przeglądu.
-Pamiętaj: wskażę Ci wszystkie błędy i luki w logice, ale nie rzucę gotowym kodem. Powodzenia!

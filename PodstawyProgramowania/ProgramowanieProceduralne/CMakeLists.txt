@@ -3,4 +3,6 @@ project(ProgramowanieProceduralne)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(ProgramowanieProceduralne main.cpp)
+add_executable(ProgramowanieProceduralne main.cpp
+        modul.h
+        modul.cpp)
