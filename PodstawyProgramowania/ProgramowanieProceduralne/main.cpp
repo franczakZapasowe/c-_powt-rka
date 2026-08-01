@@ -3,8 +3,9 @@
 #include <random>
 using namespace std;
 
-//#define ZADANIE1
- #define ZADANIE2
+constexpr int ROZMIAR = 1000;
+#define ZADANIE1
+//#define ZADANIE2
 // #define ZADANIE3
 #ifdef ZADANIE1
 
@@ -25,6 +26,7 @@ enum class KodBledu {
 };
 
 struct DaneSterujace {
+    char* Bufor [ROZMIAR];
     Stany atualyStan;
     bool dziala;
     KodBledu blad;
