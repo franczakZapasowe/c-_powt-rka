@@ -74,17 +74,14 @@ void resize(int **&tab, int row, int col, int newRow,int newCol0){
 #ifdef ZADANIE3
 
 int* genTab(int n) {
-
     int *tab = new (nothrow) int[n]{};
     if (tab!=nullptr) {
         for (int i =0; i< n; i++) tab[i] = i*5;
     }
     return tab;
-
 }
 
 void zwolnijZasoby(int **tab) {
-
     delete[] *tab;
     *tab = nullptr;
 }

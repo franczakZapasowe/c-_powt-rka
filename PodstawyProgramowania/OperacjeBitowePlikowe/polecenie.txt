@@ -1,0 +1,94 @@
+### Zadanie 1: Kompresja stanów i zarządzanie rejestrem (System Smart Home)
+
+**Kontekst:**
+Programujesz mikrokontroler zarządzający strefą w inteligentnym budynku (np. zautomatyzowanym garażem).
+Urządzenie dysponuje bardzo małą ilością pamięci, dlatego stany wszystkich systemów w strefie muszą być przechowywane w jednej,
+ 8-bitowej zmiennej typu `uint8_t` (tzw. kombinacie).
+
+**Układ bitów w rejestrze (od najmłodszego bitu 0 do najstarszego 7):**
+
+* **Bity 0-2 (3 bity):** Poziom wentylacji (wartości od 0 do 7).
+* **Bit 3 (1 bit):** Stan oświetlenia (0 = wyłączone, 1 = włączone).
+* **Bity 4-5 (2 bity):** Tryb czuwania alarmu (0 = rozbrojony, 1 = dom, 2 = noc, 3 = uzbrojony).
+* **Bity 6-7 (2 bity):** Kody błędów sprzętowych (0 = OK, 1-3 = różne awarie).
+
+**Wymagania:**
+
+1. Utwórz strukturę `namespace` zawierającą wyliczenia `enum` z odpowiednimi maskami bitowymi.
+
+2. Napisz funkcję kompresującą `kompresujStany`, która przyjmuje 4 osobne zmienne (wentylacja, światło, alarm, błąd),
+obcina je maskami do odpowiedniej długości, przesuwa w lewo operatorami `<<` na docelowe pozycje i scala
+w jedną zmienną `uint8_t` za pomocą alternatywy bitowej `|`.
+
+
+3. Napisz funkcję `przelaczSwiatlo`, która przyjmuje referencję do Twojego rejestru i przy pomocy różnicy bitowej (XOR `^=`)
+oraz odpowiedniej maski zmienia stan bitu 3 na przeciwny, nie ruszając pozostałych konfiguracji.
+
+
+4. Napisz funkcję dekompresującą, która wyodrębnia z rejestru (przy użyciu koniunkcji `&` i przesunięć w prawo `>>`)
+aktualny tryb czuwania alarmu i wypisuje go na ekran.
+
+
+---
+
+### Zadanie 2: Strukturyzowane logi tekstowe (Monitoring parametrów środowiskowych)
+
+**Kontekst:**
+Twój system musi na bieżąco raportować dane ze stacji pogodowej lub czujników przemysłowych.
+Dane muszą być zapisywane do pliku w formacie tekstowym, aby administrator mógł je z łatwością odczytać w notatniku.
+
+**Wymagania:**
+
+1. Zbuduj strukturę `Czujnik` przechowującą: `int id_strefy`, `double temperatura`, `double wilgotnosc`.
+2. Otwórz plik tekstowy w trybie `"w+"` (zapis z możliwością odczytu).
+
+
+3. Napisz funkcję zapisującą tablicę 3 takich struktur do pliku. Wykorzystaj `fprintf` lub `sprintf`,
+pamiętając o bezwzględnym dodaniu separatora (np. średnika `;`) pomiędzy polami. Bez separatora liczby skleją się w jeden nieczytelny ciąg.
+
+
+4. Przewiń plik na początek za pomocą `rewind()`.
+
+
+5. Napisz procedurę odczytu, która ładuje te dane z powrotem do nowej, pustej tablicy. Użyj pętli `while`.
+Zabezpiecz się przed problemem podwójnego odczytu ostatniej linii, weryfikując flagę końca pliku `feof()`
+wewnątrz pętli, zaraz po próbie odczytu funkcją `fscanf`.
+
+
+
+---
+
+### Zadanie 3: Baza danych telemetrycznych (Komunikacja binarna i precyzja głowicy)
+
+**Kontekst:**
+Zapisywanie dużej ilości danych pomiarowych w tekście jest mało wydajne.
+Przechodzimy na format binarny. Tworzysz lokalną bazę logów z precyzyjnych liczników zużycia prądu.
+Baza musi umożliwiać modyfikację pojedynczych rekordów w locie, bez wczytywania całego pliku do pamięci.
+
+**Wymagania:**
+
+1. Stwórz strukturę `LogZasilania`: `int timestamp` (znacznik czasu) oraz `double zuzycie_kWh`.
+2. Zainicjalizuj w kodzie tablicę z 5 przykładowymi pomiarami.
+3. Otwórz plik w trybie `"w+b"` (tryb binarny, zapis z możliwością odczytu).
+
+
+4. Zapisz całą tablicę do pliku za pomocą jednego wywołania funkcji `fwrite`.
+Zauważysz, że plik będzie całkowicie nieczytelny dla człowieka (zapisywane są surowe bajty).
+
+
+5. **Główne wyzwanie - nadpisywanie rekordu w locie:**
+* Przewiń głowicę komunikacyjną na początek pliku.
+
+
+* Napisz pętlę, która czyta plik struktura po strukturze używając `fread`,
+szukając wpisu o konkretnym `timestamp` (np. trzeciego z rzędu).
+
+
+* Gdy program natrafi na szukany rekord, użyj funkcji `ftell()` lub `fgetpos()`,
+aby sprawdzić aktualną pozycję głowicy. Pamiętaj, że po odczycie głowica przeskoczyła już za szukany rekord!
+
+
+* Oblicz offset i cofnij głowicę używając `fseek()` lub `fsetpos()`
+dokładnie na początek znalezionej struktury w pliku.
+
+* Będąc na odpowiedniej pozycji, nadpisz ten jeden rekord nowymi danymi używając ponownie `fwrite`.
