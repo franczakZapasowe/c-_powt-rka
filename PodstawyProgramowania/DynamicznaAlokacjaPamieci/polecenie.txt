@@ -1,0 +1,80 @@
+
+
+### Zadanie 1: Wskaźniki wyższego stopnia i blokady `const` (Niskopoziomowy silnik audio)
+
+**Cel:** Bezbłędne posługiwanie się wskaźnikami wielokrotnego stopnia i modyfikatorami `const`.
+**Wymagania:**
+
+* Wyobraź sobie, że piszesz niskopoziomowy moduł cyfrowego przetwarzania dźwięku (np. do własnego equalizera),
+gdzie dane przepływają przez hermetyczną macierz wskaźników.
+* Zadeklaruj wskaźnik 3-go stopnia na typ `double`, w którym za pomocą specyfikatorów `const`
+gwarantujesz nienaruszalność wartości wskazywanego wskaźnika 2-go stopnia oraz ostatecznej wartości wskazywanej typu `double`.
+
+
+* Napisz kod, który dynamicznie alokuje całą tę strukturę:
+najpierw wskaźnik 2-go stopnia, potem wskaźnik 1-go stopnia, aż po docelową zmienną `double`.
+
+
+* Odczytaj wartość końcową, wykonując trzykrotną dereferencję wskaźnika 3-go stopnia,
+pamiętając, że wskaźnik n-stopnia można poddać dereferencji maksymalnie n razy.
+
+
+* Na koniec zwolnij całą przypisaną pamięć w poprawnej kolejności za pomocą operatora `delete`,
+aby zapobiec wyciekowi pamięci i zablokowaniu sterty.
+
+
+
+### Zadanie 2: Ciągła alokacja 2D i bezpieczna zmiana rozmiaru (System tradingowy)
+
+**Cel:** Zarządzanie dynamicznymi tablicami dwuwymiarowymi w alokacji ciągłej oraz zmiana ich rozmiaru w locie bez
+tracenia kontaktu z pamięcią.
+**Wymagania:**
+
+* Zbuduj bufor danych przechowujący parametry ryzyka (np. procenty obsunięcia kapitału, wartości mnożników) dla zautomatyzowanego systemu handlowego.
+* Zaalokuj dynamicznie tablicę 2D wykorzystując **alokację ciągłą**,
+gdzie główny wskaźnik wskazuje na tablicę wskaźników 1-go stopnia,
+a jej zerowy element wskazuje na ciągły blok pamięci typu docelowego.
+
+
+* Zastosuj partycjonowanie pamięci, aby kolejne wskaźniki z
+tablicy pokazywały na elementy w odstępach odpowiadających rozmiarowi całego wiersza.
+
+
+* Napisz procedurę zmiany rozmiaru tej tablicy (rozbudowa o nowe parametry rynkowe),
+która najpierw alokuje do wskaźnika tymczasowego nową, większą tablicę o alokacji ciągłej.
+
+
+* Procedura ta musi przekopiować dane,
+a następnie bezpiecznie usunąć oryginalną tablicę, zwalniając najpierw zerowy wiersz, a dopiero później tablicę wskaźników.
+
+
+* Po zwolnieniu starej tablicy, przypisz adres nowej
+tablicy do głównego wskaźnika i ustaw wskaźnik tymczasowy na `nullptr`.
+
+
+
+### Zadanie 3: Proceduralny menedżer pamięci (`std::nothrow` i uziemianie)
+
+**Cel:** Hermetyzacja operacji alokacji i dealokacji, ochrona przed rzucaniem wyjątków
+oraz poprawne modyfikowanie wskaźnika oryginalnego z wnętrza innej funkcji.
+**Wymagania:**
+
+* Napisz funkcję generującą ogromną tablicę dynamiczną
+dla wielowątkowego przetwarzania danych, która na koniec zwraca wskaźnik z adresem alokacji.
+
+
+* Użyj mechanizmu `new(std::nothrow)`, aby w przypadku wyczerpania
+stosu/sterty operator powstrzymał się od rzucenia wyjątku `std::bad_alloc` i po prostu zwrócił `nullptr`.
+
+
+* Sprawdź poprawność alokacji weryfikując, czy zwrócony adres różni się od `nullptr` przed przystąpieniem do wpisywania danych.
+
+* Napisz funkcję `zwolnijZasoby`, która przyjmuje jako argument wskaźnik 2-go stopnia na Twoją tablicę.
+
+* Wewnątrz tej funkcji poddaj wskaźnik dereferencji, aby użyć na nim operatora `delete[]` i prawidłowo zwolnić ciąg.
+
+* Zaraz po tym, w tej samej funkcji, "uziem" oryginalny wskaźnik z
+funkcji wywołującej, przypisując mu `nullptr` poprzez dereferencję przekazanego adresu.
+
+
+
