@@ -1,4 +1,4 @@
-### Zadanie 1: Kompresja stanów i zarządzanie rejestrem (System Smart Home)
+ ### Zadanie 1: Kompresja stanów i zarządzanie rejestrem (System Smart Home)
 
 **Kontekst:**
 Programujesz mikrokontroler zarządzający strefą w inteligentnym budynku (np. zautomatyzowanym garażem).
