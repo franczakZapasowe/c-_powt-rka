@@ -54,8 +54,6 @@ pamiętając o bezwzględnym dodaniu separatora (np. średnika `;`) pomiędzy po
 Zabezpiecz się przed problemem podwójnego odczytu ostatniej linii, weryfikując flagę końca pliku `feof()`
 wewnątrz pętli, zaraz po próbie odczytu funkcją `fscanf`.
 
-
-
 ---
 
 ### Zadanie 3: Baza danych telemetrycznych (Komunikacja binarna i precyzja głowicy)

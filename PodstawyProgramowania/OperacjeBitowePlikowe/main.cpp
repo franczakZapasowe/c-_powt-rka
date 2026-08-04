@@ -1,7 +1,12 @@
 #include <iostream>
 #include <bitset>
+#include <cstdio>
 using namespace std;
 
+//#define ZADANIE1
+#define ZADANIE2
+//#define ZADANIE3
+#ifdef ZADANIE1
 namespace stany {
     enum  {
         wentylacja = (1<<0 | 1<<1 | 1<<2),
@@ -112,3 +117,71 @@ void wypisz(__uint8_t r) {
     alarmy(r);
     bledy(r);
 }
+
+#endif
+
+#ifdef ZADANIE2
+struct Czujnik {
+    int id_strefy;
+    double temperatura;
+    double wilgotnosc;
+};
+
+ostream& operator<<(ostream& os, Czujnik& cz) {
+    os<<"Id strefy: "<<cz.id_strefy<<endl;
+    os<<"Temperatura: "<<cz.temperatura<<endl;
+    os<<"Wilgotnosc: "<<cz.wilgotnosc<<endl;
+    return os;
+}
+
+void zapisz(Czujnik*, FILE*plik, int rozmiar = 3 );
+void odczytaj(Czujnik*, FILE*plik);
+void wypelnij (Czujnik&, int,double,double);
+
+
+int main() {
+
+
+    Czujnik tablicaCzujnikow[3];
+    wypelnij(tablicaCzujnikow[0], 3, 0.5, 20.5);
+    wypelnij(tablicaCzujnikow[1], 6, 1.5, 420.5);
+    wypelnij(tablicaCzujnikow[2], 41, 6.5, 11.5);
+    Czujnik tablicaCzujnikow2[3]={};
+
+
+    FILE *plik = fopen("dane.txt", "w+");
+    zapisz(tablicaCzujnikow, plik);
+    rewind(plik);
+    odczytaj(tablicaCzujnikow2,plik);
+    for (int i = 0; i < 3; i++) {
+        cout<<"Czujnik: "<<i<<endl;
+        cout<<tablicaCzujnikow2[i];
+    }
+    fclose(plik);
+    return 0;
+}
+
+void zapisz(Czujnik *czujniki, FILE*plik,int rozmiar) {
+    for (int i=0; i<rozmiar; i++) {
+        fprintf(plik,"%d;%lf;%lf;\n", czujniki[i].id_strefy,czujniki[i].temperatura,czujniki[i].wilgotnosc);
+    }
+}
+
+void wypelnij (Czujnik& czujnik, int s,double t,double w) {
+    czujnik.id_strefy = s;
+    czujnik.temperatura = t;
+    czujnik.wilgotnosc = w;
+}
+
+
+void odczytaj(Czujnik  *czujniki, FILE*plik) {
+    int strefa = 0; double temperatura = 0.0, wilgotnosc = 0.0;
+    for (int i=0; i<3; i++) {
+        fscanf(plik,"%d;",&strefa);
+        fscanf(plik,"%lf;",&temperatura);
+        fscanf(plik,"%lf;",&wilgotnosc);
+        wypelnij(czujniki[i],strefa,temperatura,wilgotnosc);
+    }
+}
+
+#endif
