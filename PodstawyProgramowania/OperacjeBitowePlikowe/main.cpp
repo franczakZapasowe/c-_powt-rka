@@ -4,8 +4,8 @@
 using namespace std;
 
 //#define ZADANIE1
-#define ZADANIE2
-//#define ZADANIE3
+//#define ZADANIE2
+#define ZADANIE3
 #ifdef ZADANIE1
 namespace stany {
     enum  {
@@ -182,6 +182,39 @@ void odczytaj(Czujnik  *czujniki, FILE*plik) {
         fscanf(plik,"%lf;",&wilgotnosc);
         wypelnij(czujniki[i],strefa,temperatura,wilgotnosc);
     }
+}
+
+#endif
+
+#ifdef ZADANIE3
+struct LogZasilania {
+    int timestamp;
+    double zuzycie_kWh;
+};
+
+int main() {
+    LogZasilania logi[5]={};
+    double zuzycie = 0.0;
+    for (int i = 0; i < 5; i++, zuzycie+=0.1 ) {
+        logi[i].timestamp = i;
+        logi[i].zuzycie_kWh = zuzycie;
+    }
+    FILE *plik = fopen("pomiar.txt","w+b");
+    fwrite(logi, sizeof(LogZasilania),5,plik);
+    rewind(plik);
+
+    LogZasilania temp;
+    while (true) {
+        fread(&temp,sizeof(LogZasilania),1,plik);
+        if (feof(plik)) break;
+        if (temp.timestamp == 3) {
+            fseek(plik,-(long)sizeof(LogZasilania),SEEK_CUR);
+            break;
+        }
+    }
+    temp.zuzycie_kWh = 922.3;
+    fwrite(&temp,sizeof(LogZasilania),1,plik);
+    fclose(plik);
 }
 
 #endif
