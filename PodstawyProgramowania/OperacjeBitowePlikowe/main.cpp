@@ -1,84 +1,114 @@
 #include <iostream>
-#include <unistd.h>
 #include <bitset>
 using namespace std;
 
-namespace stany{
-    enum {
-        Wentylacja =(1<<0 | 1<<1 | 1<<2),
-        Oswietlenie = (1<<3),
-        Alarm = (1<<4 | 1<<5),
-        Bledy = (1<<6 | 1<<7),
+namespace stany {
+    enum  {
+        wentylacja = (1<<0 | 1<<1 | 1<<2),
+        oswietlenie = (1<<3),
+        alarm = (1<<4 | 1<<5),
+        bledy = (1<<6 | 1<<7)
     };
 }
+void pokaz(__uint8_t r);
+void swiatlo(__uint8_t r);
+void wypisz(__uint8_t r);
+void wentylacja(__uint8_t r);
+void bledy(__uint8_t r);
+void alarmy(__uint8_t);
 
 __uint8_t kompresujStany(int,int,int,int);
-void przelaczSwiatlo(__uint8_t&rej);
-void dekompresuj(__uint8_t);
-
+void przelaczSwiatlo(__uint8_t&r);
+void dekompresujStany(__uint8_t r);
 
 int main() {
+    __uint8_t rejestr = 0b00110110;
+    pokaz(rejestr);
+    rejestr = kompresujStany(15,1,3,0);
+    pokaz(rejestr);
+    przelaczSwiatlo(rejestr);
+    pokaz(rejestr);
+    przelaczSwiatlo(rejestr);
+    pokaz(rejestr);
+    dekompresujStany(rejestr);
 
-    __uint8_t rejest= 0b00101011;
-    // Wentylacja wlaczana na 3 oswietlenie wlaczona, alarm - dom bledy - 0
-    cout<<"Stan: "<<bitset<8>(rejest)<<endl;
-    cout<<"Czy swiatlo wlaczone: "<<(bool)(rejest&stany::Oswietlenie)<<endl;
-    przelaczSwiatlo(rejest);
-    cout<<"Zmiana swiatla\n";
-    cout<<"Czy swiatlo wlaczone: "<<(bool)(rejest&stany::Oswietlenie)<<endl;
-    cout<<"Stan: "<<bitset<8>(rejest)<<endl;
-    dekompresuj(rejest);
-
-    rejest = kompresujStany(5,1,3,0);
-    cout<<"Stan: "<<bitset<8>(rejest)<<endl;
-
+    cout<<endl;
+    wypisz(rejestr);
+    rejestr = kompresujStany(19,0,2,11);
+    cout<<endl;
+    wypisz(rejestr);
+    return 0;
 }
 
-__uint8_t kompresujStany(int wentylacja,int swiatlo,int alarm,int bledy) {
-    __uint8_t maskaWentylacja = 0b111;  //0 0 0 0 0 1 1 1
-    __uint8_t maskaSwitalo = 0b1; //0 0 0 0 1 0 0 0
-    __uint8_t maskaAlarm = 0b11; //0 0 1 1 0 0 0 0;
-    __uint8_t maskaBledy = 0b11;//1 1 0 0 0 0 0 0;
+void pokaz(__uint8_t r) {
+    cout<<"Stan: "<<bitset<8>(r)<<endl;
+}
+void swiatlo(__uint8_t r) {
+    __uint8_t maska = 1;
+    r = (r>>3)&maska;
+    if (r) cout<<"Swiatlo wlaczone\n";
+    else cout<<"Swiatlo wyloczone\n";
+}
 
-    // gdybym chcial uzyc maski z enum to powinieem najpierw przesunac potem maska
+__uint8_t kompresujStany(int wentylacja, int swiatlo, int alarm, int blad) {
+    __uint8_t wynik;
+    __uint8_t maskaWentylacja = 0b111;
+    __uint8_t maskaSwiatlo = 0b1;
+    __uint8_t maskaAlarm = 0b11;
+    __uint8_t maskaBlad = 0b11;
+
     wentylacja &= maskaWentylacja;
-    swiatlo &= maskaSwitalo;
+    swiatlo &= maskaSwiatlo;
     alarm &= maskaAlarm;
-    bledy &= maskaBledy;
+    blad &= maskaBlad;
 
     swiatlo = (swiatlo<<3);
     alarm = (alarm<<4);
-    bledy = (bledy<<6);
+    blad = (blad<<6);
 
-    __uint8_t kombinat;
-
-    kombinat = (wentylacja | swiatlo | alarm | bledy);
-    return kombinat;
+    wynik = wentylacja | swiatlo | alarm | blad;
+    return wynik;
+}
+void przelaczSwiatlo(__uint8_t&r) {
+    __uint8_t maska = 0b00001000;
+    r^= maska;
+}
+void dekompresujStany(__uint8_t r) {
+    r = (r>>4) & 0b00000011;
+    cout<<"Tryb alarmu:\n";
+    if (r == 3) cout << "Tryb czuwania alarmu: Uzbrojony\n";
+    else if (r == 2) cout << "Tryb czuwania alarmu: NOC\n";
+    else if (r == 1) cout << "Tryb czuwania alarmu: DOM\n";
+    else cout << "Dom rozbrojony\n";
 }
 
-void przelaczSwiatlo(__uint8_t&rej) {
-    __uint8_t maska = 0b1000;
-    __uint8_t temp = rej;
-    rej^=maska;
+void wentylacja(__uint8_t r) {
+    r = r & 0b111;
+    if (r<=7) {
+        if (r == 0) cout<<"Wentylacja wylaczona\n";
+        else
+            cout<<"Wentylacja ustawiona na: "<<r<<endl;;
+    }
 }
 
-void dekompresuj(__uint8_t t) {
-    __uint8_t maskaDom = 0b1;
-    __uint8_t maskaNoc = 0b10;
-    __uint8_t maskaUzbrojony = 0b11;
-    // 0 0 1 1 0 0 1 1
-    // 0 0 0 0 0 0 1 0
-    t = (t>>4)&0b11;
-
-    if ((t & maskaUzbrojony) ==3) cout<<"Dom uzbrojony\n";
-    else if ((t &maskaNoc) == 2) cout<<"Alarm noc\n";
-    else if ((t & maskaDom) == 1) cout<<"Alarm dom\n";
+void bledy(__uint8_t r) {
+    __uint8_t maska = 0b11;
+    r = (r>>6)&maska;
+    if (r!=0) cout<<"Awaria\n";
+    else cout<<"Brak awari";
+}
+void alarmy(__uint8_t r) {
+    r = (r>>4)&0b11;
+    if (r == 3)cout<<"Dom uzbrojony\n";
+    else if (r == 2)cout<<"Noc tryb czuwania\n";
+    else if (r == 1)cout<<"Dom tryb czuwania \n";
     else cout<<"Dom rozbrojony\n";
 }
-void wetylacja() {
 
-}
-
-void wypisz(__uint8_t rej) {
-
+void wypisz(__uint8_t r) {
+    pokaz(r);
+    wentylacja(r);
+    swiatlo(r);
+    alarmy(r);
+    bledy(r);
 }
