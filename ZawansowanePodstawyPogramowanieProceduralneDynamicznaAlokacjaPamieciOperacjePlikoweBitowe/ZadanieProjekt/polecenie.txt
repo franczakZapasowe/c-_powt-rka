@@ -1,0 +1,83 @@
+Witaj w zespole. Przejdźmy od razu do rzeczy. Mamy przed sobą krytyczny problem biznesowy do rozwiązania.
+Na hale magazynowe trafiają codziennie dziesiątki tysięcy elektronicznych podzespołów motoryzacyjnych
+(moduły ABS, czujniki trakcji). Z linii produkcyjnej dostajemy potężne zrzuty danych telemetrycznych w surowym formacie binarnym. Nasz obecny system kontroli jakości "dławi się" przy przetwarzaniu tych plików, pożera całą dostępną pamięć i nie potrafi w locie oznaczać sprawdzonych części.
+
+Jako główny architekt wymagam od Ciebie zaprojektowania i implementacji niskopoziomowego silnika przetwarzającego (nazwijmy go AQC-Core – *Automotive Quality Control Core*). Ma to być absolutnie zoptymalizowane narzędzie, które udowodni, że rozumiesz fizykę pamięci i strumieni danych.
+
+Oto Twoja specyfikacja projektowa.
+
+---
+
+### I. Kontekst Biznesowy i Cel Systemu
+
+System AQC-Core musi pełnić rolę szybkiego filtra pomiędzy plikami zrzutowymi z produkcji a bazą danych magazynu. Narzędzie ma analizować ciągły strumień skompresowanych danych binarnych, wyodrębniać z nich informacje o parametrach fizycznych części, oceniać ich status jakościowy (QC), a następnie bezpowrotnie oznaczać przetworzone rekordy bezpośrednio w oryginalnym pliku produkcyjnym. Części, które wykazują krytyczne anomalie, muszą być skatalogowane w pamięci operacyjnej w celu późniejszego wyeksportowania ich do czytelnego raportu tekstowego dla inżynierów.
+
+---
+
+### II. Wymagania Funkcjonalne
+
+**1. Zarządzanie Pamięcią Operacyjną (RAM)**
+
+* Zabronione jest ładowanie całego pliku binarnego do pamięci za jednym zamachem. Rozmiar plików może w przyszłości przekraczać zasoby sprzętowe.
+* System musi posiadać rejestr (katalog) w pamięci operacyjnej, do którego będą trafiać wyłącznie części zaklasyfikowane jako "Wadliwe" lub "Do ręcznej inspekcji".
+* Rejestr ten musi bezwzględnie dopasowywać swój rozmiar do bieżących potrzeb. Rozpoczyna od minimalnej pojemności, a w miarę napotykania kolejnych wadliwych części, jego pojemność ma być płynnie powiększana w sposób całkowicie bezstratny dla dotychczas zgromadzonych w nim danych.
+* Po zakończeniu pracy cała przestrzeń wykorzystywana przez ten dynamiczny rejestr musi zostać perfekcyjnie zutylizowana, nie pozostawiając najmniejszego śladu w zasobach systemu.
+
+**2. Przetwarzanie i Modyfikacja Danych (Operacje Plikowe)**
+
+* Aplikacja otwiera główny strumień produkcyjny i czyta go iteracyjnie, rekord po rekordzie.
+* Jeżeli analizowany detal pomyślnie przejdzie weryfikację bitową (wymagania poniżej), system musi precyzyjnie cofnąć swoją "głowicę odczytu/zapisu" do miejsca, w którym fizycznie znajduje się ten konkretny rekord na dysku, zmodyfikować jeden z jego statusów i natychmiast go nadpisać. Reszta pliku musi pozostać absolutnie nienaruszona.
+* Po zakończeniu skanowania całości strumienia binarnego, system musi wygenerować całkowicie nowy plik tekstowy. Do tego pliku należy zrzucić zawartość dynamicznego rejestru wadliwych części, tak aby każdy inżynier mógł otworzyć go w standardowym notatniku (dane muszą być oddzielone ustalonym separatorem, a każda część musi znajdować się w nowej linii).
+
+**3. Dekodowanie i Kompresja (Operacje Bitowe)**
+
+* Pojedynczy rekord motoryzacyjny w pliku produkcyjnym waży dokładnie 8 bajtów (64 bity) i nie jest podzielony na standardowe typy liczbowe. Musisz go odczytywać jako jeden surowy, binarny monolit.
+* Twoim zadaniem jest manualne wyłuskanie odpowiednich fragmentów tego monolitu, maskowanie niepotrzebnych bitów i przesunięcie interesujących nas wartości tak, aby dało się je przypisać do czytelnych zmiennych w programie, na których będziesz wykonywać logikę.
+* System musi też potrafić wykonać operację odwrotną: zmodyfikować tylko jeden konkretny bit w tym monolicie, nie niszcząc sąsiadujących z nim danych, a następnie zapisać go z powrotem.
+
+---
+
+### III. Specyfikacja Formatu Danych (Monolit 64-bitowy)
+
+Każda pobrana z maszyny część jest zakodowana w 64-bitowym bloku danych według poniższego schematu (od bitu najmłodszego do najstarszego):
+
+| Zakres bitów | Rozmiar | Opis i Przeznaczenie |
+| --- | --- | --- |
+| **0 - 19** | 20 bitów | **Numer Seryjny Części (ID).** Surowa wartość liczbowa. |
+| **20 - 31** | 12 bitów | **Odchylenie Wymiarowe.** Wartość z czujnika mikrometrycznego. |
+| **32 - 47** | 16 bitów | **Temperatura Pracy.** Zmierzona w stopniach Celsjusza. |
+| **48 - 55** | 8 bitów | **Rejestr Statusów Jakościowych (Kombinat).** Tutaj znajduje się 8 niezależnych flag (szczegóły poniżej). |
+| **56 - 63** | 8 bitów | **Zarezerwowane dla systemu.** Ignoruj te bity przy odczycie, ale pod żadnym pozorem nie zmieniaj ich wartości podczas nadpisywania. |
+
+**Architektura Rejestru Statusów Jakościowych (Bity 48 - 55):**
+Wewnątrz tych ośmiu bitów ukryte są flagi decydujące o losie części. Licząc od najmłodszego bitu w tym bajcie:
+
+* **Bit 0:** Test szczelności (1 = zaliczony, 0 = oblany).
+* **Bit 1:** Test ciągłości obwodów (1 = zaliczony, 0 = oblany).
+* **Bit 2:** Flaga Inspekcji (1 = system produkcyjny oznaczył część jako podejrzaną).
+* **Bity 3-6:** Kody błędów diagnostycznych (wartości od 0 do 15).
+* **Bit 7:** Flaga Przetworzenia (Początkowo zawsze 0. To ten bit musisz zmienić na 1 w pliku, jeśli część spełnia wszystkie normy i zostaje dopuszczona do użytku).
+
+---
+
+### IV. Logika Akceptacji (Kiedy część trafia do pamięci?)
+
+Część uważamy za wadliwą (i musi ona trafić do dynamicznie rozrastającego się katalogu w RAM) wyłącznie wtedy, gdy zajdzie **dowolny** z poniższych warunków:
+
+1. Nie zaliczyła testu szczelności LUB nie zaliczyła testu ciągłości obwodów.
+2. Zgłasza kod błędu diagnostycznego inny niż 0.
+3. Ma włączoną Flagę Inspekcji, a jej Odchylenie Wymiarowe przekracza pewną zdefiniowaną przez Ciebie w systemie stałą graniczną.
+
+Jeśli żaden z tych warunków nie występuje, część jest dobra – musisz zmienić jej Flagę Przetworzenia (Bit 7 w kombinacie) na stan wysoki i nadpisać ten konkretny rekord w pliku produkcyjnym.
+
+---
+
+### V. Kryteria Sukcesu (Zaliczenie)
+
+Projekt uznam za zamknięty i gotowy na wdrożenie produkcyjne, jeśli:
+
+1. Rozszerzanie pamięci nie zgubi ani jednego przypisanego rekordu i nie wystąpi najmniejszy wyciek pamięci w całym cyklu życia programu.
+2. System zmodyfikuje dokładnie ten jeden, właściwy bit w odpowiednim rekordzie na dysku, nie uszkadzając Numeru Seryjnego, Temperatury ani zarezerwowanych bitów kontrolnych.
+3. Plik tekstowy będzie w pełni sformatowany i gotowy do odczytu przez inżyniera jakości, zawierając pełne zdekodowane wartości uszkodzonych podzespołów.
+
+To jest twarda inżynieria. Powodzenia.
