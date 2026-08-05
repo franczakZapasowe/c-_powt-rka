@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <random>
+constexpr int ODCHYLENIEWYMIAROWESTALE = 100;
 namespace rekord {
     enum {
         numerCzesci,
@@ -15,17 +16,20 @@ namespace rekord {
 }
 
 uint64_t dodajRekord(uint64_t,uint64_t,uint64_t,uint64_t);
-
+void edytujRekod(uint64_t&,int);
+bool  weryfiukujRekord(uint64_t&rekord);
 
 int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distrib(0, 2000000);
+    std::uniform_int_distribution<> distrib2(0, 6000);
+    std::uniform_int_distribution<> distrib3(0, 65535);
     int rozmiarBzowy = 50;
     uint64_t *rejestrWadliwych = new uint64_t[rozmiarBzowy];
     for (int i=0;i<rozmiarBzowy;i++) {
         //do skonczoneia
-        rejestrWadliwych[i] = dodajRekord(distrib(rd),i+1,i+2,i+3);
+        rejestrWadliwych[i] = dodajRekord(distrib(rd),distrib2(rd),distrib3(gen),0b01011110);
     }
     FILE * plik = fopen("wszystkiedane.txt","w+b");
     FILE * plik2 = fopen("poprawneDane.txt","w+b");
@@ -37,7 +41,7 @@ int main() {
             int rozmiarTymczasowy = rozmiarBzowy * 2;
             uint64_t * rejestTymczasowy = new uint64_t [rozmiarTymczasowy];
 
-            memcpy(rejestTymczasowy,rejestrWadliwych,rozmiarBzowy*sizeof(int));
+            memcpy(rejestTymczasowy,rejestrWadliwych,rozmiarBzowy*sizeof(uint64_t));
 
             delete[] rejestrWadliwych;
             rejestrWadliwych = rejestTymczasowy;
@@ -47,12 +51,19 @@ int main() {
 
         fread(&rejestrWadliwych[i],sizeof(uint64_t),1,plik);
         fwrite(&rejestrWadliwych[i],sizeof(uint64_t),1,plik2);
-        if (i) {
+        if (weryfiukujRekord(rejestrWadliwych[i])) {
             fseek(plik,-sizeof(rejestrWadliwych[0]),SEEK_CUR);
         }
         i++;
     }
+
+    //zapis do nowego pliku
+    for (int i=0;i<rozmiarBzowy;i++) {
+        fprintf(plik2,"%d;\n",rejestrWadliwych[i]);
+    }
+
     fclose(plik);
+    fclose(plik2);
     delete[] rejestrWadliwych;
 }
 
@@ -63,12 +74,8 @@ uint64_t dodajRekord(uint64_t nr,uint64_t odchylenie,uint64_t temperatura,uint64
     uint64_t maskaTemperatura = 65535;
     uint64_t maskaStatus = 255;
 
-    odchylenie = (odchylenie>>20);
-    temperatura = (temperatura>>32);
-    status = (status>>48);
-
-    nr&= maskaNr;
-    odchylenie &=maskaOdchyleni;
+    nr &= maskaNr;
+    odchylenie &= maskaOdchyleni;
     temperatura &= maskaTemperatura;
     status &= maskaStatus;
 
@@ -78,4 +85,23 @@ uint64_t dodajRekord(uint64_t nr,uint64_t odchylenie,uint64_t temperatura,uint64
 
     rekod = nr | odchylenie | temperatura | status ;
     return rekod ;
+}
+bool weryfiukujRekord(uint64_t& rekord) {
+    uint64_t tempDlaOdchylenia = rekord;
+    rekord = (rekord>>48);
+    uint64_t maska = 0b01111111;
+
+    uint64_t maskaOdchyleni = 4095;
+    tempDlaOdchylenia  = (tempDlaOdchylenia>>20);
+    tempDlaOdchylenia &=maskaOdchyleni;
+
+    if ((maska&rekord) && (tempDlaOdchylenia > ODCHYLENIEWYMIAROWESTALE)) {
+        //zmiana bitu flagi nie jest juz podejrzany
+        // zmiana flagi przetworzenia
+        uint64_t maskaFlagi = 0b10000100;
+        rekord ^= maskaFlagi;
+        rekord = (rekord<<48);
+        return true;
+    }
+    return false;
 }
