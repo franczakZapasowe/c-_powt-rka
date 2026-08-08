@@ -1,0 +1,3 @@
+/home/mf/C++/WskaznikiZadanieZlozone/build/CMakeFiles/zadanieWskazniki.dir
+/home/mf/C++/WskaznikiZadanieZlozone/build/CMakeFiles/edit_cache.dir
+/home/mf/C++/WskaznikiZadanieZlozone/build/CMakeFiles/rebuild_cache.dir
