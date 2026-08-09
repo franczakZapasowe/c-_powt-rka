@@ -1,0 +1,66 @@
+**Faza 1: Klasa Abstrakcyjna (Rdzeń systemu)**
+
+1. Utwórz klasę bazową reprezentującą ogólną wtyczkę audio.
+2. Ukryj w niej parametry: częstotliwość próbkowania oraz stan aktywności (prawda/fałsz). Zrób to w taki sposób, aby były one niedostępne z zewnątrz, ale widoczne dla ewentualnych klas pochodnych.
+
+
+3. Zdefiniuj konstruktor argumentowy inicjalizujący te parametry.
+4. Zdefiniuj publiczną metodę wirtualną odczytującą stan aktywności.
+5. Dodaj metodę odpowiadającą za przetwarzanie pojedynczej próbki audio (przyjmuje i zwraca typ zmiennoprzecinkowy). Skonfiguruj ją tak, aby wymusić abstrakcyjność całej klasy bazowej – rdzeń nie może posiadać własnej implementacji tej metody ani własnych instancji.
+
+
+6. Zdefiniuj destruktor w taki sposób, aby zwalnianie pamięci instancji klas pochodnych przez wskaźnik bazowy gwarantowało uruchomienie całej kaskady destruktorów z dołu do góry hierarchii. Wewnątrz umieść komunikat kontrolny z nazwą klasy.
+
+
+
+**Faza 2: Pierwszy stopień dziedziczenia**
+
+1. Utwórz klasę korektora oraz klasę kompresora. Obie mają dziedziczyć publicznie po klasie bazowej.
+
+
+2. Zastosuj tu od razu taki mechanizm dziedziczenia, który zabezpieczy architekturę przed błędem wielokrotnego powielenia rdzenia przy późniejszym tworzeniu relacji diamentowej.
+
+
+3. Zdefiniuj konstruktory argumentowe obu klas, poprawnie delegując inicjalizację pól do konstruktora rdzenia.
+4. Nadpisz metodę przetwarzającą w obu klasach. Zastosuj specyfikator, który wymusi na kompilatorze rygorystyczną weryfikację tego nadpisania. Korektor ma podbijać sygnał (mnożenie przez 1.5), a kompresor go tłumić (mnożenie przez 0.8).
+
+
+5. Dodaj destruktory z odpowiednimi komunikatami kontrolnymi.
+
+**Faza 3: Koszmar Diamentu (Dziedziczenie Wielobazowe)**
+
+1. Utwórz klasę kompresora wielopasmowego, która łączy cechy obu wtyczek z Fazy 2 (dziedziczy po nich obu jednocześnie, domykając strukturę diamentu).
+
+
+2. Napisz konstruktor dla tej klasy. Zwróć szczególną uwagę na to, kto w takiej specyficznej architekturze jest bezpośrednio odpowiedzialny za wywołanie konstruktora najwyższej (wspólnej) klasy bazowej.
+
+
+3. Nadpisz metodę przetwarzającą (niech mnoży próbkę przez 1.2).
+4. Zablokuj tę metodę specjalnym specyfikatorem w taki sposób, aby żadna kolejna, ewentualna klasa pochodna nie mogła już jej zmodyfikować.
+
+
+
+**Faza 4: Wyjątki od reguł dziedziczenia**
+
+1. Utwórz klasę wtyczki diagnostycznej, która dziedziczy po głównym rdzeniu w sposób ściśle prywatny.
+
+
+2. Ponieważ całe publiczne API rdzenia stało się teraz ukryte, zastosuj mechanizm wyjątków, aby z powrotem otworzyć publiczny dostęp *wyłącznie* do metody odczytującej stan aktywności. Reszta ma pozostać zamknięta.
+
+
+3. Zaimplementuj metodę przetwarzającą tak, aby zwracała próbkę bez żadnych modyfikacji.
+
+**Faza 5: Poligon Testowy (Funkcja `main`)**
+
+1. Utwórz tablicę wskaźników mogącą pomieścić cztery dowolne wtyczki. Mechanizm musi opierać się na polimorfizmie.
+
+
+2. Wypełnij ją instancjami wszystkich czterech wtyczek utworzonymi w trakcie działania programu (dynamicznie).
+
+
+3. Zainicjalizuj testową zmienną zmiennoprzecinkową symulującą sygnał audio (np. 1.0).
+4. Napisz pętlę, która przepuści ten sygnał przez całą tablicę (wynik z pierwszej wtyczki staje się wejściem do drugiej, i tak dalej). Wyświetlaj wyniki pośrednie po każdej wtyczce.
+
+
+5. Poprawnie zwolnij całą zaalokowaną pamięć. Komunikaty z destruktorów w konsoli będą ostatecznym dowodem na to, czy struktura diamentu i mechanika pamięci zostały zaimplementowane bezbłędnie.
+

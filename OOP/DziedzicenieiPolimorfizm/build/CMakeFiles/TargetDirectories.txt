@@ -1,0 +1,3 @@
+/home/mf/C++/OOP/DziedzicenieiPolimorfizm/build/CMakeFiles/polimorfizm.dir
+/home/mf/C++/OOP/DziedzicenieiPolimorfizm/build/CMakeFiles/edit_cache.dir
+/home/mf/C++/OOP/DziedzicenieiPolimorfizm/build/CMakeFiles/rebuild_cache.dir

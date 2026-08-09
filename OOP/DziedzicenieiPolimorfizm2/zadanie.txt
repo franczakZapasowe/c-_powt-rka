@@ -1,0 +1,49 @@
+
+### Projekt: Konsola Mikserska i Dynamiczne Rzutowanie
+
+**Faza 1: Baza (Klasa Abstrakcyjna)**
+
+1. Utwórz klasę bazową `KanalMiksera`.
+
+
+2. Dodaj do niej chronione pole z nazwą ścieżki (np. `char m_nazwa[30]`) oraz konstruktor, który je inicjalizuje.
+
+
+3. Zdefiniuj metodę czysto wirtualną `przetwarzaj()`.
+
+
+4. Dodaj wirtualny destruktor.
+
+
+
+**Faza 2: Specyficzne Ścieżki (Klasy Pochodne)**
+
+1. Utwórz dwie klasy pochodne: `KanalBebnow` oraz `KanalWokalu`. Obie dziedziczą publicznie po bazie.
+
+
+2. Zdefiniuj dla nich odpowiednie konstruktory delegujące nazwę do bazy.
+3. Nadpisz metodę `przetwarzaj()` (użyj `override`). Wewnątrz daj proste `cout` informujące, czy na ścieżce leci kompresja na bębnach, czy de-esser na wokalu.
+
+
+4. **Zadanie specjalne:** Tylko i wyłącznie do klasy `KanalWokalu` dodaj nową, *niewirtualną* metodę `ustawAutoTune(double sila)`. Zwykły kanał nie wie, co to Auto-Tune.
+
+**Faza 3: Poligon Testowy i Wyzwanie Główne (Funkcja `main`)**
+
+1. Utwórz tablicę wskaźników do klasy bazowej `KanalMiksera* sesja[4];`.
+
+
+2. Wypełnij ją dynamicznie różnymi kanałami (np. 2 wokale, 2 kanały z bębnami).
+
+
+3. Napisz pętlę iterującą po tablicy, która dla każdego kanału polimorficznie wywołuje metodę `przetwarzaj()`.
+
+
+4. **THE BOSS FIGHT:** Wewnątrz tej samej pętli musisz sprawdzić, z jakim faktycznie obiektem masz w danym momencie do czynienia. Jeśli (i tylko jeśli) wskaźnik bazowy ukrywa pod sobą fizycznie obiekt klasy `KanalWokalu`, musisz wywołać na nim metodę `ustawAutoTune()`. Ponieważ tej metody nie ma w klasie bazowej, musisz użyć operatora `dynamic_cast` do rzutowania wskaźnika bazowego na wskaźnik pochodny i sprawdzić, czy rzutowanie się powiodło.
+
+
+5. Posprzątaj pamięć wywołując `delete`.
+
+
+
+**Cel:** Program ma płynnie przechodzić przez tablicę, przetwarzać każdy kanał, ale nakładać efekt Auto-Tune *tylko* na ścieżki wokalne, ignorując bębny.
+
