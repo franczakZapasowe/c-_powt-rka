@@ -4,5 +4,6 @@ project(Zadanie1)
 
 set(CMAKE_CXX_STANDRAD)
 
-add_executable(zadanie1 koder.cpp)
+add_executable(zadanie1 koder.cpp
+        koder2.cpp)
 
