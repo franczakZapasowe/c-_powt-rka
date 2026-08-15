@@ -1,0 +1,3 @@
+/home/mf/C++/ProgramowanieGeneryczne/PodstawyProgramowaniaGenerycznego/BUILD/CMakeFiles/zadanie0.dir
+/home/mf/C++/ProgramowanieGeneryczne/PodstawyProgramowaniaGenerycznego/BUILD/CMakeFiles/edit_cache.dir
+/home/mf/C++/ProgramowanieGeneryczne/PodstawyProgramowaniaGenerycznego/BUILD/CMakeFiles/rebuild_cache.dir
