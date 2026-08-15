@@ -7,4 +7,5 @@ set(CMAKE_CXX_STANDRAD 20)
 add_executable(zadanie0 main.cpp
         Wektor.cpp
         Wektor.h
-        template.cpp)
+        template.cpp
+        Urna.cpp)
