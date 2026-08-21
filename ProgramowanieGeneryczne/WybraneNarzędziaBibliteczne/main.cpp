@@ -7,6 +7,23 @@
 #include <chrono>
 #include <tuple>
 #include <random>
+#include <format>
+#include <thread>
+using namespace std::chrono;
+using namespace std::chrono_literals;
+
+struct Timer {
+    std::chrono::time_point<std::chrono::steady_clock>start;
+    Timer() {
+        start = std::chrono::steady_clock::now();
+    }
+
+    ~Timer() {
+        auto end = std::chrono::steady_clock::now();
+        auto wynik = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        std::cout<<"Czas trwania operacji to: "<<wynik.count()<<"\n";
+    }
+};
 
 template<typename T>
 std::ostream & operator << (std::ostream &str, const std::vector<T>&vector){
@@ -158,6 +175,26 @@ int main (){
 
 
     std::cout<<"\n\n--------------------\nPomiar czasu\n";
-    std::chrono::high_resolution_clock::now();
+    // zwykle wypisywanie czasu
+    auto teraz = std::chrono::system_clock::now();
+    std::time_t ObecnaData = std::chrono::system_clock::to_time_t(teraz);
+    std::cout<<"Obecna data: "<<std::ctime(&ObecnaData);
+    // do obliczania czasu funkji
+
+    auto start = std::chrono::steady_clock::now();
+    for (int i =0; i<10000; i++) {int liczba; liczba*=i;}
+    auto stop = std::chrono::steady_clock::now();
+    auto wynik = std::chrono::duration_cast<std::chrono::microseconds>(stop-start);
+    std::cout<<std::format("Czas dzialania funkcji to {}",wynik.count());
+
+
+    {
+        Timer t;
+        int x = 0;
+        for (int i =0; i<10000;i++) {
+             x *=i*i;
+        }
+    }
+
 
 }
