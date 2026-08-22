@@ -1,0 +1,33 @@
+
+### Zadanie: "Menadżer Presetów i Logów"
+
+Twoim celem jest napisanie programu, który automatycznie wygeneruje środowisko testowe (foldery i pliki), a następnie przeprowadzi na nim operacje czyszczenia, kopiowania i raportowania.
+
+**Etap 1: Przygotowanie środowiska (Generowanie)**
+
+1. Program ma stworzyć główny katalog o nazwie `AudioProjects` w obecnym katalogu roboczym (`current_path`).
+2. Wewnątrz `AudioProjects` utwórz trzy podkatalogi: `EQ`, `Compressor` oraz `Reverb`.
+3. Do każdego z tych trzech podkatalogów wygeneruj programowo:
+* Dwa pliki tekstowe (np. `preset1.txt`, `preset2.txt`), do których wpiszesz w kodzie jakąkolwiek linijkę tekstu (np. "Gain: 4.5dB").
+* Jeden plik tymczasowy (np. `cache.tmp`).
+
+
+
+**Etap 2: Głębokie czyszczenie (Rekurencja)**
+
+1. Napisz mechanizm, który przeszuka katalog `AudioProjects` **wraz ze wszystkimi jego podkatalogami**.
+2. Jeśli program napotka jakikolwiek plik z rozszerzeniem `.tmp`, musi go bezpowrotnie usunąć.
+
+**Etap 3: Archiwizacja i modyfikacja nazw**
+
+1. Utwórz nowy katalog `AudioBackup` (obok `AudioProjects`).
+2. Program ma skopiować wszystkie ocalałe pliki `.txt` z podfolderów `AudioProjects` do jednego, wspólnego katalogu `AudioBackup`.
+3. **Haczyk:** Podczas kopiowania program musi zmienić nazwę pliku docelowego, doklejając do niego nazwę folderu, z którego pochodzi, żeby pliki się nie nadpisały (np. plik `preset1.txt` z folderu `EQ` ma zostać skopiowany jako `EQ_preset1.txt`).
+
+**Etap 4: Generowanie Raportu**
+
+1. W głównym katalogu utwórz plik `raport.txt`.
+2. Zapisz do niego ścieżki wszystkich pomyślnie skopiowanych plików oraz ich rozmiar w bajtach (użyj do tego odpowiedniej funkcji z biblioteki `<filesystem>`).
+
+
+
