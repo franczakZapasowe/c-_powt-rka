@@ -40,7 +40,6 @@ int main() {
     std::cout<<"\nwektor\n";
     for (const auto &l:wektor) std::cout<<l<<" ";
 
-
     auto nowyKOniec = std::remove_if(wektor.begin(),wektor.end(),[](int v){
         return v==0;
     });
@@ -48,13 +47,7 @@ int main() {
 
     std::cout<<"\nwektor\n";
     for (const auto &l:wektor) std::cout<<l<<" ";
-
-
-
-
     return 0;
-
-
 }
 
 
