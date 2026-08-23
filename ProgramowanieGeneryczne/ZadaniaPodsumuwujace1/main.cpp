@@ -94,7 +94,7 @@ int main() {
     int idx_najmniejszej = 2;
     auto predykat4 = [idx_najmniejszej,min_zakres,max_zakres](std::span<const int> t) {
         assert(predykat0(t,min_zakres,max_zakres));
-        for (int i=0;i<3;i++) {
+        for (int i=0;i<t.size();i++) {
             if (i!=idx_najmniejszej&& t[idx_najmniejszej]>t[i]) return false;
         }
         return true;
@@ -144,7 +144,7 @@ int main() {
     }while (index<0 || index>dlugoscKodu);
     auto predykat4 = [index,dolna,gorna](std::span<const int> t) {
         assert(predykat0(t,dolna,gorna));
-        for (int i=0;i<3;i++) {
+        for (int i=0;i<t.size();i++) {
             if (i!=index&& t[index]>t[i]) return false;
         }
         return true;
@@ -154,9 +154,20 @@ int main() {
     int liczba_kombinacji = std::pow(gorna - dolna + 1, dlugoscKodu);
     auto wariacje = std::views::iota(0, liczba_kombinacji) | std::views::transform([=](int index) {
         std::vector<int> kod(dlugoscKodu);
-        // Tutaj matematycznie przeliczamy 'index' na cyfry w systemie o podstawie (gorna - dolna + 1)
-        // przy użyciu std::generate lub rekurencji
+        int podstawa = gorna - dolna+1;
+        std::ranges::generate(kod,[&index, podstawa,dolna]() {
+            int cyfra = (index%podstawa) + dolna;
+            index /= podstawa;  
+            return cyfra;
+        });
         return kod;
+    })
+    |std::views::filter([predykat1,predykat2,predykat3,predykat4](std::vector<int> kod ) {
+        return predykat1(kod) && predykat2(kod) && predykat3(kod) &&predykat4(kod);
+    });
+    std::ranges::for_each(wariacje, [=](std::vector<int> kod) {
+        for (auto a: kod)
+        std::cout<<a<<" ";
     });
 
 #endif
